@@ -152,7 +152,7 @@ table tr:nth-child(even) {
     animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Responsive */
+/* Para web Responsive */
 @media (max-width: 600px) {
     .operations {
         flex-direction: column;
