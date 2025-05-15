@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, render_template
 import pandas as pd
 
 class Nodo:
@@ -47,7 +47,6 @@ class ListaEnlazada:
             actual = actual.siguiente
         return datos
 
-    # Agregar este método a la clase ListaEnlazada
     def buscar(self, dato):
         actual = self.cabeza
         posicion = 0
@@ -73,25 +72,7 @@ def index():
         else:
             mensaje_busqueda = 'Elemento no encontrado'
 
-    return f'''
-        <h1>Lista Enlazada Simple</h1>
-        <form action="/insertar" method="post">
-            <input type="text" name="valor" required>
-            <input type="submit" value="Insertar">
-        </form>
-        <form action="/eliminar" method="post">
-            <input type="text" name="valor" required>
-            <input type="submit" value="Eliminar">
-        </form>
-        <form action="/buscar" method="post">
-            <input type="text" name="valor" required>
-            <input type="submit" value="Buscar">
-        </form>
-        <p>{mensaje_busqueda}</p>
-        <h2>Elementos en la lista:</h2>
-        {df.to_html()}
-        <p>Tamaño de la lista: {lista.tamaño}</p>
-    '''
+    return render_template('index.html', datos=df.to_html(index=False), mensaje_busqueda=mensaje_busqueda, lista=lista)
 
 @app.route('/buscar', methods=['POST'])
 def buscar():

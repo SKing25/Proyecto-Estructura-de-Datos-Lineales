@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Enlazada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista Enlazada Simple</h1>
+        
+        <div class="operations">
+            <div class="operation-card">
+                <h3>Insertar elemento</h3>
+                <form action="/insertar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a insertar" required>
+                    <input type="submit" value="Insertar">
+                </form>
+            </div>
+            
+            <div class="operation-card">
+                <h3>Eliminar elemento</h3>
+                <form action="/eliminar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a eliminar" required>
+                    <input type="submit" value="Eliminar">
+                </form>
+            </div>
+            
+            <div class="operation-card">
+                <h3>Buscar elemento</h3>
+                <form action="/buscar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a buscar" required>
+                    <input type="submit" value="Buscar">
+                </form>
+            </div>
+        </div>
+        
+        {% if mensaje_busqueda %}
+        <div class="message">
+            <p>{{ mensaje_busqueda }}</p>
+        </div>
+        {% endif %}
+        
+        <h2>Elementos en la lista:</h2>
+        <div class="list-container">
+            {{ datos|safe }}
+        </div>
+        
+        <div class="list-info">
+            <p>Tamaño de la lista: {{ lista.tamaño }}</p>
+        </div>
+    </div>
+</body>
+</html>
