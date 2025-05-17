@@ -48,8 +48,7 @@ Utiliza el microframework Flask para la creación de la interfaz web, permitiend
 3. **Instalar las dependencias**:
 
    ```bash
-   pip install flask
-   pip install pandas
+   pip install flask pandas
    ```
 
 4. **Ejecutar la aplicación**:
