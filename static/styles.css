@@ -142,7 +142,7 @@ table tr:nth-child(even) {
     font-weight: bold;
 }
 
-/* Animations */
+/* Animaciones */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -152,7 +152,7 @@ table tr:nth-child(even) {
     animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Responsive design */
+/* Para web Responsive */
 @media (max-width: 600px) {
     .operations {
         flex-direction: column;
