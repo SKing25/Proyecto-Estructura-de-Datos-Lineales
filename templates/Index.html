@@ -49,6 +49,10 @@
         
         <div class="list-info">
             <p>Tamaño de la lista: {{ lista.tamaño }}</p>
+            {% if tiempos %}
+              <p>Tiempos de inserción: {{ tiempos }}</p>
+              <p>Memoria usada: {{ memorias }}</p>
+            {% endif %}
         </div>
     </div>
 </body>
