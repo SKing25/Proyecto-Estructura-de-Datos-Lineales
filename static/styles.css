@@ -92,12 +92,24 @@ body {
     opacity: 0.5;
     filter: grayscale(50%);
 }
+ 
+
+.card.coming-soon:hover {
+    opacity: 0.7;
+    transform: scale(1);
+}
+
+
 
 .card-image {
     flex: 1;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 
 .card-image img {
     width: 100%;

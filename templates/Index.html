@@ -18,7 +18,7 @@
                 <div class="carousel-track" id="carouselTrack">
                     <div class="card active" data-url="/lista-simple">
                         <div class="card-image">
-                            <img src="/api/placeholder/300/200" alt="Lista Enlazada Simple" />
+                            <img src="{{ url_for('static', filename='images/lista-simple.jpg') }}" alt="Lista Enlazada Simple" />
                         </div>
                         <div class="card-content">
                             <h3>Lista Enlazada Simple</h3>
@@ -32,7 +32,7 @@
 
                     <div class="card" data-url="/lista-doble">
                         <div class="card-image">
-                            <img src="/api/placeholder/300/200" alt="Lista Enlazada Doble" />
+                            <img src="{{ url_for('static', filename='images/lista-doble.jpg') }}" alt="Lista Enlazada Doble" />
                         </div>
                         <div class="card-content">
                             <h3>Lista Enlazada Doble</h3>
@@ -46,7 +46,7 @@
 
                     <div class="card coming-soon">
                         <div class="card-image">
-                            <img src="/api/placeholder/300/200" alt="Próximamente" />
+                            <img src="{{ url_for('static', filename='images/coming-soon.png') }}" alt="Próximamente" />
                         </div>
                         <div class="card-content">
                             <h3>Más Estructuras</h3>
