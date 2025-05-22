@@ -4,6 +4,8 @@ import time
 from memory_profiler import memory_usage
 from functools import wraps
 
+app = Flask(__name__)
+
 def benchmark(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -16,6 +18,8 @@ def benchmark(func):
         memoria = mem_after - mem_before
         return result, tiempo, memoria
     return wrapper
+
+# -------------------------------Lista Enlazda Simple---------------------------------
 
 class Nodo:
     def __init__(self, dato):
@@ -76,7 +80,6 @@ class ListaEnlazada:
             posicion += 1
         return -1
 
-app = Flask(__name__)
 lista = ListaEnlazada()
 
 @app.route('/')
@@ -91,7 +94,11 @@ def index():
         else:
             mensaje_busqueda = 'Elemento no encontrado'
 
-    return render_template('index.html', datos=df.to_html(index=False), mensaje_busqueda=mensaje_busqueda, lista=lista)
+    return render_template(
+        'index.html',
+        datos=df.to_html(index=False),
+        mensaje_busqueda=mensaje_busqueda,
+        lista=lista)
 
 @app.route('/buscar', methods=['POST'])
 def buscar():
@@ -149,6 +156,152 @@ def eliminar():
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista,
+        tiempos=f"{tiempo_total:.7f} s",
+        memorias=f"{memoria_total:.6f} MB"
+    )
+
+#---------------------------------Lista Enlazada Doble---------------------------------
+
+class NodoDoble:
+    def __init__(self, dato):
+        self.dato = dato
+        self.siguiente = None
+        self.anterior = None
+
+class ListaEnlazadaDoble:
+    def __init__(self):
+        self.cabeza = None
+        self.ultimo = None
+        self.tamaño = 0
+
+    @benchmark
+    def insertar(self, dato):
+        nuevo_nodo = NodoDoble(dato)
+        if not self.cabeza:
+            self.cabeza = nuevo_nodo
+            self.ultimo = nuevo_nodo
+        else:
+            nuevo_nodo.anterior = self.ultimo
+            self.ultimo.siguiente = nuevo_nodo
+            self.ultimo = nuevo_nodo
+        self.tamaño += 1
+
+    @benchmark
+    def eliminar(self, dato):
+        if not self.cabeza:
+            return
+
+        actual = self.cabeza
+        while actual and actual.dato != dato:
+            actual = actual.siguiente
+
+        if actual:
+            if actual.anterior:
+                actual.anterior.siguiente = actual.siguiente
+            else:
+                self.cabeza = actual.siguiente
+
+            if actual.siguiente:
+                actual.siguiente.anterior = actual.anterior
+            else:
+                self.ultimo = actual.anterior
+
+            self.tamaño -= 1
+
+    def obtener_lista(self):
+        datos = []
+        actual = self.cabeza
+        while actual:
+            datos.append(actual.dato)
+            actual = actual.siguiente
+        return datos
+
+    @benchmark
+    def buscar(self, dato):
+        actual = self.cabeza
+        posicion = 0
+        while actual:
+            if actual.dato == dato:
+                return posicion
+            actual = actual.siguiente
+            posicion += 1
+        return -1
+
+lista_doble = ListaEnlazadaDoble()
+
+@app.route('/doble')
+def index_doble():
+    datos = lista_doble.obtener_lista()
+    df = pd.DataFrame(datos, columns=['Valor'])
+    resultado_busqueda = request.args.get('resultado')
+    mensaje_busqueda = ''
+    if resultado_busqueda is not None:
+        if int(resultado_busqueda) >= 0:
+            mensaje_busqueda = f'Elemento encontrado en la posición {resultado_busqueda}'
+        else:
+            mensaje_busqueda = 'Elemento no encontrado'
+
+    return render_template('.html', #JORGE PONES EL ARCHIVO
+                         datos=df.to_html(index=False),
+                         mensaje_busqueda=mensaje_busqueda,
+                         lista=lista_doble)
+
+@app.route('/doble/buscar', methods=['POST'])
+def buscar_doble():
+    valor = request.form['valor']
+    posicion, tiempo, memoria = lista_doble.buscar(valor)
+    datos = lista_doble.obtener_lista()
+    df = pd.DataFrame(datos, columns=['Valor'])
+    mensaje = f'Elemento {"encontrado en posición " + str(posicion) if posicion >= 0 else "no encontrado"}'
+    return render_template(
+        '.html', #JORGE PONES EL ARCHIVO
+        datos=df.to_html(index=False),
+        mensaje_busqueda=mensaje,
+        lista=lista_doble,
+        tiempos=f"{tiempo:.7f} s",
+        memorias=f"{memoria:.6f} MB"
+    )
+
+@app.route('/doble/insertar', methods=['POST'])
+def insertar_doble():
+    valor = request.form['valor']
+    tiempos = []
+    memorias = []
+    for valor in valor.split(','):
+        _, t, m = lista_doble.insertar(valor.strip())
+        tiempos.append(t)
+        memorias.append(m)
+    tiempo_total = sum(tiempos)
+    memoria_total = sum(memorias)
+    datos = lista_doble.obtener_lista()
+    df = pd.DataFrame(datos, columns=['Valor'])
+    return render_template(
+        '.html', #JORGE PONES EL ARCHIVO
+        datos=df.to_html(index=False),
+        mensaje_busqueda='',
+        lista=lista_doble,
+        tiempos=f"{tiempo_total:.7f} s",
+        memorias=f"{memoria_total:.6f} MB"
+    )
+
+@app.route('/doble/eliminar', methods=['POST'])
+def eliminar_doble():
+    valor = request.form['valor']
+    tiempos = []
+    memorias = []
+    for valor in valor.split(','):
+        _, t, m = lista_doble.eliminar(valor.strip())
+        tiempos.append(t)
+        memorias.append(m)
+    tiempo_total = sum(tiempos)
+    memoria_total = sum(memorias)
+    datos = lista_doble.obtener_lista()
+    df = pd.DataFrame(datos, columns=['Valor'])
+    return render_template(
+        '.html', #JORGE PONES EL ARCHIVO
+        datos=df.to_html(index=False),
+        mensaje_busqueda='',
+        lista=lista_doble,
         tiempos=f"{tiempo_total:.7f} s",
         memorias=f"{memoria_total:.6f} MB"
     )
