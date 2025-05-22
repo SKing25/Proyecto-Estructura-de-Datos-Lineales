@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Enlazada Simple</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <a href="/" class="back-btn">← Volver al Menú</a>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Lista Enlazada Simple</h1>
+            <p>Estructura de datos lineal donde cada elemento apunta al siguiente</p>
+        </div>
+        
+        <div class="operations">
+            <div class="operation-card">
+                <h3>🔢 Insertar elemento</h3>
+                <form action="/lista-simple/insertar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a insertar (separar con comas para múltiples)" required>
+                    <input type="submit" value="Insertar">
+                </form>
+            </div>
+            
+            <div class="operation-card">
+                <h3>🗑️ Eliminar elemento</h3>
+                <form action="/lista-simple/eliminar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a eliminar (separar con comas para múltiples)" required>
+                    <input type="submit" value="Eliminar">
+                </form>
+            </div>
+            
+            <div class="operation-card">
+                <h3>🔍 Buscar elemento</h3>
+                <form action="/lista-simple/buscar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a buscar" required>
+                    <input type="submit" value="Buscar">
+                </form>
+            </div>
+        </div>
+        
+        {% if mensaje_busqueda %}
+        <div class="message">
+            <p>{{ mensaje_busqueda }}</p>
+        </div>
+        {% endif %}
+        
+        <h2> Elementos en la lista:</h2>
+        <div class="list-container">
+            {{ datos|safe }}
+        </div>
+        
+        <div class="list-info">
+            <p> Tamaño de la lista: {{ lista.tamaño }}</p>
+            {% if tiempos %}
+              <p> Tiempo de ejecución: {{ tiempos }}</p>
+              <p> Memoria utilizada: {{ memorias }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,59 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Enlazada</title>
+    <title>Estructuras de Datos - Menú Principal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Lista Enlazada Simple</h1>
-        
-        <div class="operations">
-            <div class="operation-card">
-                <h3>Insertar elemento</h3>
-                <form action="/insertar" method="post">
-                    <input type="text" name="valor" placeholder="Valor a insertar" required>
-                    <input type="submit" value="Insertar">
-                </form>
+    <div class="main-container">
+        <header class="header">
+            <h1>Estructuras de Datos</h1>
+            <p>Selecciona una estructura para comenzar</p>
+        </header>
+
+        <div class="carousel-container">
+            <div class="carousel">
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="card active" data-url="/lista-simple">
+                        <div class="card-image">
+                            <img src="/api/placeholder/300/200" alt="Lista Enlazada Simple" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Lista Enlazada Simple</h3>
+                            <p>Estructura lineal donde cada elemento apunta al siguiente</p>
+                            <div class="card-features">
+                                <span class="feature">Inserción O(1)</span>
+                                <span class="feature">Búsqueda O(n)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-url="/lista-doble">
+                        <div class="card-image">
+                            <img src="/api/placeholder/300/200" alt="Lista Enlazada Doble" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Lista Enlazada Doble</h3>
+                            <p>Cada elemento tiene punteros al anterior y siguiente</p>
+                            <div class="card-features">
+                                <span class="feature">Navegación bidireccional</span>
+                                <span class="feature">Eliminación eficiente</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card coming-soon">
+                        <div class="card-image">
+                            <img src="/api/placeholder/300/200" alt="Próximamente" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Más Estructuras</h3>
+                            <p>Próximamente más estructuras de datos</p>
+                            <div class="card-features">
+                                <span class="feature">Cuando Santiago chambee</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="operation-card">
-                <h3>Eliminar elemento</h3>
-                <form action="/eliminar" method="post">
-                    <input type="text" name="valor" placeholder="Valor a eliminar" required>
-                    <input type="submit" value="Eliminar">
-                </form>
+
+            <div class="carousel-controls">
+                <button class="carousel-btn prev" id="prevBtn">❮</button>
+                <button class="carousel-btn next" id="nextBtn">❯</button>
             </div>
-            
-            <div class="operation-card">
-                <h3>Buscar elemento</h3>
-                <form action="/buscar" method="post">
-                    <input type="text" name="valor" placeholder="Valor a buscar" required>
-                    <input type="submit" value="Buscar">
-                </form>
+
+            <div class="carousel-indicators" id="indicators">
+                <span class="indicator active" data-slide="0"></span>
+                <span class="indicator" data-slide="1"></span>
+                <span class="indicator" data-slide="2"></span>
             </div>
         </div>
-        
-        {% if mensaje_busqueda %}
-        <div class="message">
-            <p>{{ mensaje_busqueda }}</p>
+
+        <div class="action-buttons">
+            <button class="primary-btn" id="selectBtn">Seleccionar Estructura</button>
+            <button class="secondary-btn" onclick="showInfo()">Información</button>
         </div>
-        {% endif %}
-        
-        <h2>Elementos en la lista:</h2>
-        <div class="list-container">
-            {{ datos|safe }}
-        </div>
-        
-        <div class="list-info">
-            <p>Tamaño de la lista: {{ lista.tamaño }}</p>
-            {% if tiempos %}
-              <p>Tiempos de inserción: {{ tiempos }}</p>
-              <p>Memoria usada: {{ memorias }}</p>
-            {% endif %}
+
+        <div class="info-panel" id="infoPanel">
+            <h3>Acerca de las Estructuras de Datos</h3>
+            <p>Las estructuras de datos son formas de organizar y almacenar información de manera eficiente. Cada estructura tiene sus propias ventajas y casos de uso específicos.</p>
         </div>
     </div>
+
+    <script>
+        let currentSlide = 0;
+        const cards = document.querySelectorAll('.card');
+        const indicators = document.querySelectorAll('.indicator');
+        const track = document.getElementById('carouselTrack');
+        
+        function updateCarousel() {
+            cards.forEach((card, index) => {
+                card.classList.toggle('active', index === currentSlide);
+            });
+            
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentSlide);
+            });
+            
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % cards.length;
+            updateCarousel();
+        });
+        
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + cards.length) % cards.length;
+            updateCarousel();
+        });
+        
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentSlide = index;
+                updateCarousel();
+            });
+        });
+        
+        document.getElementById('selectBtn').addEventListener('click', () => {
+            const activeCard = cards[currentSlide];
+            const url = activeCard.dataset.url;
+            if (url && !activeCard.classList.contains('coming-soon')) {
+                window.location.href = url;
+            }
+        });
+        
+        function showInfo() {
+            const infoPanel = document.getElementById('infoPanel');
+            infoPanel.style.display = infoPanel.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        // Auto-rotate carousel
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % cards.length;
+            updateCarousel();
+        }, 5000);
+    </script>
 </body>
 </html>

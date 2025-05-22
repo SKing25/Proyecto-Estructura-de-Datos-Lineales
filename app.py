@@ -108,7 +108,7 @@ def buscar():
     df = pd.DataFrame(datos, columns=['Valor'])
     mensaje = f'Elemento {"encontrado en posición " + str(posicion) if posicion >= 0 else "no encontrado"}'
     return render_template(
-        'index.html',
+        'lista_simple.html',
         datos=df.to_html(index=False),
         mensaje_busqueda=mensaje,
         lista=lista,
@@ -130,7 +130,7 @@ def insertar():
     datos = lista.obtener_lista()
     df = pd.DataFrame(datos, columns=['Valor'])
     return render_template(
-        'index.html',
+        'lista_simple.html',
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista,
@@ -152,7 +152,7 @@ def eliminar():
     datos = lista.obtener_lista()
     df = pd.DataFrame(datos, columns=['Valor'])
     return render_template(
-        'index.html',
+        'lista_simple.html',
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista,
@@ -241,7 +241,7 @@ def index_doble():
         else:
             mensaje_busqueda = 'Elemento no encontrado'
 
-    return render_template('.html', #JORGE PONES EL ARCHIVO
+    return render_template('lista_doble.html', #JORGE PONES EL ARCHIVO
                          datos=df.to_html(index=False),
                          mensaje_busqueda=mensaje_busqueda,
                          lista=lista_doble)
@@ -276,7 +276,7 @@ def insertar_doble():
     datos = lista_doble.obtener_lista()
     df = pd.DataFrame(datos, columns=['Valor'])
     return render_template(
-        '.html', #JORGE PONES EL ARCHIVO
+        'lista_doble.html', #JORGE PONES EL ARCHIVO
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista_doble,
@@ -298,7 +298,7 @@ def eliminar_doble():
     datos = lista_doble.obtener_lista()
     df = pd.DataFrame(datos, columns=['Valor'])
     return render_template(
-        '.html', #JORGE PONES EL ARCHIVO
+        'lista_doble.html', #JORGE PONES EL ARCHIVO
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista_doble,
