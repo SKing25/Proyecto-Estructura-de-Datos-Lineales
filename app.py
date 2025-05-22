@@ -82,10 +82,16 @@ class ListaEnlazada:
 
 lista = ListaEnlazada()
 
+# Ruta principal - Menú
 @app.route('/')
 def index():
+    return render_template('index.html')
+
+# Rutas para Lista Simple
+@app.route('/lista-simple')
+def lista_simple():
     datos = lista.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     resultado_busqueda = request.args.get('resultado')
     mensaje_busqueda = ''
     if resultado_busqueda is not None:
@@ -95,17 +101,17 @@ def index():
             mensaje_busqueda = 'Elemento no encontrado'
 
     return render_template(
-        'index.html',
+        'lista_simple.html',
         datos=df.to_html(index=False),
         mensaje_busqueda=mensaje_busqueda,
         lista=lista)
 
-@app.route('/buscar', methods=['POST'])
+@app.route('/lista-simple/buscar', methods=['POST'])
 def buscar():
     valor = request.form['valor']
     posicion, tiempo, memoria = lista.buscar(valor)
     datos = lista.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     mensaje = f'Elemento {"encontrado en posición " + str(posicion) if posicion >= 0 else "no encontrado"}'
     return render_template(
         'lista_simple.html',
@@ -116,7 +122,7 @@ def buscar():
         memorias=f"{memoria:.6f} MB"
     )
 
-@app.route('/insertar', methods=['POST'])
+@app.route('/lista-simple/insertar', methods=['POST'])
 def insertar():
     valor = request.form['valor']
     tiempos = []
@@ -128,7 +134,7 @@ def insertar():
     tiempo_total = sum(tiempos)
     memoria_total = sum(memorias)
     datos = lista.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     return render_template(
         'lista_simple.html',
         datos=df.to_html(index=False),
@@ -138,7 +144,7 @@ def insertar():
         memorias=f"{memoria_total:.6f} MB"
     )
 
-@app.route('/eliminar', methods=['POST'])
+@app.route('/lista-simple/eliminar', methods=['POST'])
 def eliminar():
     valor = request.form['valor']
     tiempos = []
@@ -150,7 +156,7 @@ def eliminar():
     tiempo_total = sum(tiempos)
     memoria_total = sum(memorias)
     datos = lista.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     return render_template(
         'lista_simple.html',
         datos=df.to_html(index=False),
@@ -229,10 +235,11 @@ class ListaEnlazadaDoble:
 
 lista_doble = ListaEnlazadaDoble()
 
-@app.route('/doble')
-def index_doble():
+# Rutas para Lista Doble
+@app.route('/lista-doble')
+def mostrar_lista_doble():
     datos = lista_doble.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     resultado_busqueda = request.args.get('resultado')
     mensaje_busqueda = ''
     if resultado_busqueda is not None:
@@ -241,20 +248,20 @@ def index_doble():
         else:
             mensaje_busqueda = 'Elemento no encontrado'
 
-    return render_template('lista_doble.html', #JORGE PONES EL ARCHIVO
+    return render_template('lista_doble.html',
                          datos=df.to_html(index=False),
                          mensaje_busqueda=mensaje_busqueda,
                          lista=lista_doble)
 
-@app.route('/doble/buscar', methods=['POST'])
+@app.route('/lista-doble/buscar', methods=['POST'])
 def buscar_doble():
     valor = request.form['valor']
     posicion, tiempo, memoria = lista_doble.buscar(valor)
     datos = lista_doble.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     mensaje = f'Elemento {"encontrado en posición " + str(posicion) if posicion >= 0 else "no encontrado"}'
     return render_template(
-        '.html', #JORGE PONES EL ARCHIVO
+        'lista_doble.html',
         datos=df.to_html(index=False),
         mensaje_busqueda=mensaje,
         lista=lista_doble,
@@ -262,7 +269,7 @@ def buscar_doble():
         memorias=f"{memoria:.6f} MB"
     )
 
-@app.route('/doble/insertar', methods=['POST'])
+@app.route('/lista-doble/insertar', methods=['POST'])
 def insertar_doble():
     valor = request.form['valor']
     tiempos = []
@@ -274,9 +281,9 @@ def insertar_doble():
     tiempo_total = sum(tiempos)
     memoria_total = sum(memorias)
     datos = lista_doble.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     return render_template(
-        'lista_doble.html', #JORGE PONES EL ARCHIVO
+        'lista_doble.html',
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista_doble,
@@ -284,7 +291,7 @@ def insertar_doble():
         memorias=f"{memoria_total:.6f} MB"
     )
 
-@app.route('/doble/eliminar', methods=['POST'])
+@app.route('/lista-doble/eliminar', methods=['POST'])
 def eliminar_doble():
     valor = request.form['valor']
     tiempos = []
@@ -296,15 +303,14 @@ def eliminar_doble():
     tiempo_total = sum(tiempos)
     memoria_total = sum(memorias)
     datos = lista_doble.obtener_lista()
-    df = pd.DataFrame(datos, columns=['Valor'])
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
     return render_template(
-        'lista_doble.html', #JORGE PONES EL ARCHIVO
+        'lista_doble.html',
         datos=df.to_html(index=False),
         mensaje_busqueda='',
         lista=lista_doble,
         tiempos=f"{tiempo_total:.7f} s",
         memorias=f"{memoria_total:.6f} MB"
     )
-
 if __name__ == '__main__':
     app.run(debug=True)
