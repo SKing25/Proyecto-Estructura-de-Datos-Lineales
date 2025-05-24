@@ -535,5 +535,94 @@ def peek_pila_lista():
         memorias=f"{memoria:.6f} MB" # Memoria utilizada
     )
 
+#-----------------------Pila basada en arreglo-----------------------------
+
+class PilaArreglo:
+    def __init__(self):
+        self.items = []
+        self.tamaño = 0
+
+    @benchmark
+    def push(self, dato):
+        self.items.append(dato)
+        self.tamaño += 1
+
+    @benchmark
+    def pop(self):
+        if self.esta_vacia():
+            return None
+        self.tamaño -= 1
+        return self.items.pop()
+
+    @benchmark
+    def peek(self):
+        if self.esta_vacia():
+            return None
+        return self.items[-1]
+
+    def esta_vacia(self):
+        return self.tamaño == 0
+
+    def obtener_pila(self):
+        return self.items[::-1]  # Retorna una copia invertida para mostrar el tope arriba
+
+pila_arreglo = PilaArreglo()  # Instancia global de la pila
+
+@app.route('/pila-arreglo') # Define la ruta para la pila basada en arreglo
+def mostrar_pila_arreglo():
+    datos = pila_arreglo.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template('pila_arreglo.html', # Renderiza la plantilla pila_arreglo.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=pila_arreglo) # Pasa la lista como contexto a la plantilla
+
+@app.route('/pila-arreglo/push', methods=['POST']) # Define la ruta para insertar un elemento en la pila basada en arreglo
+def push_pila_arreglo():
+    valor = request.form['valor'] # Obtiene el valor a insertar del formulario
+    tiempos = [] # Inicializa una lista para almacenar los tiempos
+    memorias = [] # Inicializa una lista para almacenar las memorias
+    for val in valor.split(','): # Recorre los valores separados por comas
+        _, t, m = pila_arreglo.push(val.strip()) # Llama a la función push y obtiene el tiempo y memoria
+        tiempos.append(t) # Agrega el tiempo a la lista de tiempos
+        memorias.append(m) # Agrega la memoria a la lista de memorias
+    tiempo_total = sum(tiempos) # Suma todos los tiempos
+    memoria_total = sum(memorias) # Suma todas las memorias
+
+    datos = pila_arreglo.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template('pila_arreglo.html', # Renderiza la plantilla pila_arreglo.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=pila_arreglo, # Pasa la lista como contexto a la plantilla
+                         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
+                         memorias=f"{memoria_total:.6f} MB") # Memoria total utilizada
+
+@app.route('/pila-arreglo/pop', methods=['POST']) # Define la ruta para eliminar un elemento de la pila basada en arreglo
+def pop_pila_arreglo():
+    dato, tiempo, memoria = pila_arreglo.pop() # Llama a la función pop y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento extraído: {dato}' if dato else 'Pila vacía' # Mensaje de extracción
+
+    datos = pila_arreglo.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template('pila_arreglo.html', # Renderiza la plantilla pila_arreglo.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=pila_arreglo, # Pasa la lista como contexto a la plantilla
+                         mensaje_busqueda=mensaje, # Mensaje de extracción
+                         tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+                         memorias=f"{memoria:.6f} MB") # Memoria utilizada
+
+@app.route('/pila-arreglo/peek', methods=['POST']) # Define la ruta para ver el elemento en la parte superior de la pila basada en arreglo
+def peek_pila_arreglo():
+    dato, tiempo, memoria = pila_arreglo.peek() # Llama a la función peek y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento en el tope: {dato}' if dato else 'Pila vacía' # Mensaje de vista
+
+    datos = pila_arreglo.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template('pila_arreglo.html', # Renderiza la plantilla pila_arreglo.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=pila_arreglo, # Pasa la lista como contexto a la plantilla
+                         mensaje_busqueda=mensaje, # Mensaje de vista
+                         tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+                         memorias=f"{memoria:.6f} MB") # Memoria utilizada
+
 if __name__ == '__main__': # Si este archivo se ejecuta directamente
     app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
