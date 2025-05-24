@@ -2,7 +2,7 @@
 // FUNCIONALIDADES GLOBALES
 // ================================
 
-// Funcionalidad del Toggle de Tema
+// Esta madre controla el tema claro/oscuro de toda la página
 class ThemeManager {
     constructor() {
         this.themeToggle = document.getElementById('themeToggle');
@@ -13,38 +13,42 @@ class ThemeManager {
     init() {
         if (!this.themeToggle) return;
         
-        // Cargar tema guardado o usar tema claro por defecto
+        // Cargar el tema que tenía guardado el usuario o usar claro por defecto
         const savedTheme = this.getSavedTheme() || 'light';
         this.applyTheme(savedTheme);
         
-        // Event listener para el toggle
+        // Pa' cuando el usuario le dé click al botón del tema
         this.themeToggle.addEventListener('click', () => {
             this.toggleTheme();
         });
     }
     
+    // Esta función busca el tema guardado en varios lugares por si acaso
     getSavedTheme() {
-        // Intentar usar localStorage, si falla usar sessionStorage o cookies
         try {
-            return localStorage.getItem('theme') || this.getCookieTheme() || 'light';
+            // Primero intenta localStorage, luego cookies, luego variable global
+            return localStorage.getItem('theme') || this.getCookieTheme() || window.currentTheme || 'light';
         } catch (e) {
+            // Si localStorage está bloqueado, usa alternativas
             return this.getCookieTheme() || window.currentTheme || 'light';
         }
     }
     
+    // Guarda el tema en múltiples lugares pa' que no se pierda
     saveTheme(theme) {
-        // Guardar en múltiples lugares para persistencia
         try {
             localStorage.setItem('theme', theme);
         } catch (e) {
-            // Si localStorage falla, usar cookies
+            // Si no puede usar localStorage, guarda en cookies
+            console.warn('localStorage no disponible, usando cookies');
             this.setCookieTheme(theme);
         }
         
-        // También guardar en variable global como respaldo
+        // También lo guarda en una variable global como respaldo
         window.currentTheme = theme;
     }
     
+    // Lee el tema desde las cookies
     getCookieTheme() {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
@@ -56,19 +60,21 @@ class ThemeManager {
         return null;
     }
     
+    // Guarda el tema en cookies que duran 30 días
     setCookieTheme(theme) {
-        // Guardar por 30 días
         const expires = new Date();
         expires.setTime(expires.getTime() + (30 * 24 * 60 * 60 * 1000));
         document.cookie = `theme=${theme};expires=${expires.toUTCString()};path=/`;
     }
     
+    // Aplica el tema a toda la página
     applyTheme(theme) {
         this.body.setAttribute('data-theme', theme);
         this.themeToggle.className = `theme-toggle ${theme}`;
         this.saveTheme(theme);
     }
     
+    // Cambia entre tema claro y oscuro
     toggleTheme() {
         const currentTheme = this.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -76,19 +82,25 @@ class ThemeManager {
     }
 }
 
-// Gestión de Renderizado Optimizado para Listas Grandes
+// Esta clase optimiza el renderizado cuando hay muchos elementos en listas
 class ListOptimizer {
     constructor() {
         this.isOptimizing = false;
         this.renderQueue = [];
+        this.performanceMetrics = {
+            startTime: 0,
+            renderTime: 0
+        };
         this.init();
     }
     
     init() {
         this.optimizeTableRendering();
         this.addLoadingIndicators();
+        this.setupIntersectionObserver(); // Mejora: lazy loading
     }
     
+    // Renderiza las tablas grandes por lotes pa' que no se cuelgue el navegador
     optimizeTableRendering() {
         const table = document.querySelector('table');
         if (!table) return;
@@ -96,103 +108,506 @@ class ListOptimizer {
         const tbody = table.querySelector('tbody');
         const rows = tbody?.querySelectorAll('tr');
         
-        if (!rows || rows.length < 10) return; // Solo optimizar si hay muchas filas
+        // Solo optimiza si hay más de 10 filas
+        if (!rows || rows.length < 10) return;
         
-        // Ocultar tabla durante el renderizado
+        this.performanceMetrics.startTime = performance.now();
+        
+        // Oculta la tabla mientras se renderiza
         table.style.visibility = 'hidden';
         table.style.opacity = '0';
         
-        // Usar requestAnimationFrame para renderizado por lotes
+        // Renderiza por lotes pa' mantener fluidez
         this.renderRowsInBatches(rows, table);
     }
     
+    // Renderiza las filas en grupos pequeños usando requestAnimationFrame
     renderRowsInBatches(rows, table) {
-        const batchSize = 20; // Renderizar 20 filas por lote
+        const batchSize = Math.min(20, Math.ceil(rows.length / 10)); // Mejora: tamaño dinámico
         let currentIndex = 0;
         
         const renderBatch = () => {
             const endIndex = Math.min(currentIndex + batchSize, rows.length);
             
+            // Renderiza un lote de filas
             for (let i = currentIndex; i < endIndex; i++) {
                 const row = rows[i];
                 row.style.opacity = '0';
                 row.style.transform = 'translateY(10px)';
                 
-                // Aplicar animación gradual
+                // Anima cada fila con un pequeño delay
                 setTimeout(() => {
                     row.style.transition = 'all 0.3s ease';
                     row.style.opacity = '1';
                     row.style.transform = 'translateY(0)';
-                }, (i - currentIndex) * 50);
+                }, (i - currentIndex) * 25); // Mejora: delay más rápido
             }
             
             currentIndex = endIndex;
             
+            // Si quedan más filas, continúa en el siguiente frame
             if (currentIndex < rows.length) {
                 requestAnimationFrame(renderBatch);
             } else {
-                // Mostrar tabla cuando termine
-                setTimeout(() => {
-                    table.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
-                    table.style.visibility = 'visible';
-                    table.style.opacity = '1';
-                }, 200);
+                // Cuando termina, muestra la tabla
+                this.finishTableRender(table);
             }
         };
         
         requestAnimationFrame(renderBatch);
     }
     
+   // función separada pa' finalizar el renderizado
+    finishTableRender(table) {
+        setTimeout(() => {
+            table.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
+            table.style.visibility = 'visible';
+            table.style.opacity = '1';
+            
+            // Métricas de rendimiento
+            this.performanceMetrics.renderTime = performance.now() - this.performanceMetrics.startTime;
+            console.log(`Tabla renderizada en ${this.performanceMetrics.renderTime.toFixed(2)}ms`);
+        }, 100);
+    }
+    
+    // Mejora: Intersection Observer pa' lazy loading
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '50px'
+        });
+        
+        // Observa elementos que pueden beneficiarse de lazy loading
+        document.querySelectorAll('.operation-card, .card').forEach(el => {
+            observer.observe(el);
+        });
+    }
+    
+    // Agrega indicadores de carga a los formularios
     addLoadingIndicators() {
-        // Agregar indicador de carga para operaciones lentas
         const forms = document.querySelectorAll('form');
         forms.forEach(form => {
             form.addEventListener('submit', (e) => {
-                const submitBtn = form.querySelector('input[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.value = 'Procesando...';
-                    
-                    // Mostrar spinner
-                    this.showLoadingSpinner(form);
+                const submitBtn = form.querySelector('input[type="submit"], button[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    this.showFormLoading(submitBtn, form);
                 }
             });
         });
     }
     
-    showLoadingSpinner(container) {
+    // función separada pa' el loading de formularios
+    showFormLoading(submitBtn, form) {
+        const originalText = submitBtn.value || submitBtn.textContent;
+        submitBtn.disabled = true;
+        
+        if (submitBtn.tagName === 'INPUT') {
+            submitBtn.value = 'Procesando...';
+        } else {
+            submitBtn.textContent = 'Procesando...';
+        }
+        
+        // Muestra spinner
+        const spinner = this.createLoadingSpinner();
+        form.appendChild(spinner);
+        
+        // Auto-reset después de 10 segundos por si acaso 
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.disabled = false;
+                if (submitBtn.tagName === 'INPUT') {
+                    submitBtn.value = originalText;
+                } else {
+                    submitBtn.textContent = originalText;
+                }
+                if (spinner.parentNode) {
+                    spinner.remove();
+                }
+            }
+        }, 10000);
+    }
+    
+    // función separada pa' crear el mensaje de carga de datos
+    
+    createLoadingSpinner() {
         const spinner = document.createElement('div');
         spinner.className = 'loading-spinner';
         spinner.innerHTML = `
             <div class="spinner-circle"></div>
             <span>Procesando datos...</span>
         `;
-        container.appendChild(spinner);
+        return spinner;
     }
 }
+
+// Esta clase maneja las partículas de fondo que cambian según el tema
 class ParticleManager {
     constructor() {
         this.particlesContainer = document.querySelector('.background-particles');
+        this.particles = [];
+        this.currentTheme = 'light';
+        this.animationId = null; // Mejora: controlar animaciones
         this.init();
     }
     
     init() {
         if (!this.particlesContainer) return;
-        this.createRandomParticles();
+        this.currentTheme = document.body.getAttribute('data-theme') || 'light';
+        this.createThemedParticles();
+        this.observeThemeChanges();
     }
     
-    createRandomParticles() {
-        // Crear partículas adicionales dinámicamente
-        const particleCount = Math.floor(Math.random() * 6) + 6; // Entre 6 y 12 partículas
+    // Observa cuando cambia el tema pa' actualizar las partículas
+    observeThemeChanges() {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    const newTheme = document.body.getAttribute('data-theme') || 'light';
+                    if (newTheme !== this.currentTheme) {
+                        this.currentTheme = newTheme;
+                        this.updateParticlesForTheme();
+                    }
+                }
+            });
+        });
         
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = -Math.random() * 6 + 's';
-            particle.style.animationDuration = (4 + Math.random() * 4) + 's';
-            this.particlesContainer.appendChild(particle);
+        observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+    }
+    
+    // Crea las partículas según el tema actual
+    createThemedParticles() {
+        this.clearParticles();
+        
+        if (this.currentTheme === 'dark') {
+            this.createStarsAndMeteors(); // Pa' tema oscuro: estrellas y meteoros
+        } else {
+            this.createSunbeamsAndClouds(); // Pa' tema claro: rayos de sol y nubes
         }
+    }
+    
+    // Crea efectos nocturnos: estrellas, meteoros y brillos
+    createStarsAndMeteors() {
+        // Estrellas estáticas que brillan
+        for (let i = 0; i < 15; i++) {
+            const star = this.createParticle('star', '✦');
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = -Math.random() * 3 + 's';
+            this.addParticle(star);
+        }
+        
+        // Meteoros que cruzan la pantalla
+        for (let i = 0; i < 4; i++) {
+            const meteor = this.createParticle('meteor', '🌒');
+            meteor.style.left = (Math.random() * 120 - 20) + '%';
+            meteor.style.animationDelay = -Math.random() * 8 + 's';
+            meteor.style.animationDuration = (3 + Math.random() * 2) + 's';
+            meteor.style.transform = `rotate(${Math.random() * 360}deg)`;
+            this.addParticle(meteor);
+        }
+        
+        // Estrellas con efectos de centelleo
+        for (let i = 0; i < 6; i++) {
+            const twinkleStar = this.createParticle('twinkle-star', '⭐');
+            twinkleStar.style.left = Math.random() * 100 + '%';
+            twinkleStar.style.top = Math.random() * 100 + '%';
+            twinkleStar.style.animationDelay = -Math.random() * 4 + 's';
+            this.addParticle(twinkleStar);
+        }
+    }
+    
+    // Crea efectos diurnos: sol, nubes y destellos
+    createSunbeamsAndClouds() {
+        // Rayos de sol que se mueven lentamente
+        for (let i = 0; i < 8; i++) {
+            const sunbeam = this.createParticle('sunbeam', '☀️');
+            sunbeam.style.left = Math.random() * 100 + '%';
+            sunbeam.style.animationDelay = -Math.random() * 6 + 's';
+            sunbeam.style.animationDuration = (5 + Math.random() * 3) + 's';
+            this.addParticle(sunbeam);
+        }
+        
+        // Nubes que flotan horizontalmente
+        for (let i = 0; i < 5; i++) {
+            const cloud = this.createParticle('cloud', '☁️');
+            cloud.style.left = (Math.random() * 120 - 20) + '%';
+            cloud.style.top = (Math.random() * 30 + 10) + '%';
+            cloud.style.animationDelay = -Math.random() * 10 + 's';
+            cloud.style.animationDuration = (8 + Math.random() * 4) + 's';
+            this.addParticle(cloud);
+        }
+        
+        // Destellos de luz dorada
+        for (let i = 0; i < 10; i++) {
+            const sparkle = this.createParticle('light-sparkle', '✨');
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = -Math.random() * 4 + 's';
+            sparkle.style.animationDuration = (3 + Math.random() * 2) + 's';
+            this.addParticle(sparkle);
+        }
+    }
+    
+    // Mejora: función helper pa' crear partículas
+    createParticle(className, content) {
+        const particle = document.createElement('div');
+        particle.className = `particle ${className}`;
+        particle.innerHTML = content;
+        return particle;
+    }
+    
+    // función helper pa' agregar partículas
+    addParticle(particle) {
+        this.particlesContainer.appendChild(particle);
+        this.particles.push(particle);
+    }
+    
+    // Transición suave cuando cambia el tema - esto está chingón
+    updateParticlesForTheme() {
+        const morphDuration = 1200;
+        const newTheme = this.currentTheme;
+        
+        // Separa las partículas: unas se transforman, otras desaparecen
+        const morphableParticles = [];
+        const fadingParticles = [];
+        
+        this.particles.forEach((particle, index) => {
+            // 60% se transforman, 40% desaparecen
+            if (index < Math.min(this.particles.length * 0.6, 8)) {
+                morphableParticles.push(particle);
+            } else {
+                fadingParticles.push(particle);
+            }
+        });
+        
+        // Fase 1: Transforma algunas partículas con efecto morphing
+        morphableParticles.forEach((particle, index) => {
+            setTimeout(() => {
+                this.morphParticle(particle, newTheme);
+            }, index * 150);
+        });
+        
+        // Fase 2: Desvanece las partículas restantes
+        fadingParticles.forEach((particle, index) => {
+            setTimeout(() => {
+                particle.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                particle.style.opacity = '0';
+                particle.style.transform = 'scale(0) rotate(180deg)';
+                particle.style.filter = 'blur(5px)';
+            }, index * 100);
+        });
+        
+        // Fase 3: Limpia y crea partículas nuevas
+        setTimeout(() => {
+            this.cleanupAndCreateNew(fadingParticles, morphableParticles, newTheme);
+        }, morphDuration);
+    }
+    
+    // función separada pa' cleanup
+    cleanupAndCreateNew(fadingParticles, morphableParticles, newTheme) {
+        // bye bye partículas que se desvanecieron
+        fadingParticles.forEach(particle => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        });
+        
+        // Actualiza la lista de partículas activas
+        this.particles = morphableParticles;
+        
+        // Crea partículas adicionales si es necesario
+        this.createAdditionalParticles(newTheme);
+    }
+    
+    
+    morphParticle(particle, newTheme) {
+        // Crea un overlay pa' la transición
+        const morphOverlay = document.createElement('div');
+        Object.assign(morphOverlay.style, {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            opacity: '0',
+            transform: 'scale(0)',
+            transition: 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            fontSize: particle.style.fontSize,
+            pointerEvents: 'none'
+        });
+        
+        // Decide qué mostrar según el tema
+        const newContent = this.getNewParticleContent(newTheme);
+        morphOverlay.innerHTML = newContent.content;
+        morphOverlay.className = `particle ${newContent.className}`;
+        
+        particle.appendChild(morphOverlay);
+        
+        // Ejecuta la transformación en etapas
+        this.executeParticleTransformation(particle, morphOverlay, newTheme);
+    }
+    
+    // función separada pa' obtener contenido nuevo
+    getNewParticleContent(newTheme) {
+        if (newTheme === 'dark') {
+            return Math.random() > 0.5 
+                ? { content: '✦', className: 'star' }
+                : { content: '⭐', className: 'twinkle-star' };
+        } else {
+            return Math.random() > 0.5
+                ? { content: '☀️', className: 'sunbeam' }
+                : { content: '✨', className: 'light-sparkle' };
+        }
+    }
+    
+    // Mejora: función separada pa' ejecutar la transformación
+    executeParticleTransformation(particle, morphOverlay, newTheme) {
+        setTimeout(() => {
+            // Fase 1: Desvanece contenido original
+            particle.style.transition = 'all 0.6s ease-out';
+            particle.style.filter = 'blur(3px) brightness(0.3)';
+            
+            // Fase 2: Muestra nuevo contenido
+            setTimeout(() => {
+                morphOverlay.style.opacity = '1';
+                morphOverlay.style.transform = 'scale(1.2)';
+                
+                // Fase 3: Reemplaza completamente
+                setTimeout(() => {
+                    particle.innerHTML = morphOverlay.innerHTML;
+                    particle.className = morphOverlay.className;
+                    particle.style.filter = 'blur(0px) brightness(1)';
+                    particle.style.transition = 'all 0.4s ease-out';
+                    
+                    this.applyThemeSpecificAnimation(particle, newTheme);
+                }, 300);
+            }, 200);
+        }, 100);
+    }
+    
+    // Aplica animaciones específicas según el tema
+    applyThemeSpecificAnimation(particle, theme) {
+        if (theme === 'dark') {
+            if (particle.classList.contains('star')) {
+                particle.style.animationDelay = -Math.random() * 3 + 's';
+            } else if (particle.classList.contains('twinkle-star')) {
+                particle.style.animationDelay = -Math.random() * 4 + 's';
+            }
+        } else {
+            if (particle.classList.contains('sunbeam')) {
+                particle.style.animationDelay = -Math.random() * 6 + 's';
+                particle.style.animationDuration = (5 + Math.random() * 3) + 's';
+            } else if (particle.classList.contains('light-sparkle')) {
+                particle.style.animationDelay = -Math.random() * 4 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+            }
+        }
+    }
+    
+    // Crea partículas adicionales y completar el efecto
+    createAdditionalParticles(theme) {
+        const currentCount = this.particles.length;
+        const targetCount = theme === 'dark' ? 25 : 23;
+        const needsMore = targetCount - currentCount;
+        
+        if (needsMore > 0) {
+            for (let i = 0; i < needsMore; i++) {
+                setTimeout(() => {
+                    const particle = this.createNewParticleForTheme(theme);
+                    this.animateParticleEntrance(particle);
+                }, i * 200 + Math.random() * 300);
+            }
+        }
+    }
+    
+    // función separada pa crear partículas nuevas
+    createNewParticleForTheme(theme) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        if (theme === 'dark') {
+            if (Math.random() > 0.7) {
+                particle.className += ' meteor';
+                particle.innerHTML = '🌒';
+                particle.style.animationDelay = -Math.random() * 8 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+            } else {
+                particle.className += ' star';
+                particle.innerHTML = '✦';
+                particle.style.animationDelay = -Math.random() * 3 + 's';
+            }
+        } else {
+            if (Math.random() > 0.6) {
+                particle.className += ' cloud';
+                particle.innerHTML = '☁️';
+                particle.style.top = (Math.random() * 30 + 10) + '%';
+                particle.style.animationDelay = -Math.random() * 10 + 's';
+                particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+            } else {
+                particle.className += ' light-sparkle';
+                particle.innerHTML = '✨';
+                particle.style.animationDelay = -Math.random() * 4 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+            }
+        }
+        
+        // Posicionamiento
+        particle.style.left = Math.random() * 100 + '%';
+        if (!particle.classList.contains('cloud')) {
+            particle.style.top = Math.random() * 100 + '%';
+        }
+        
+        return particle;
+    }
+    
+    // función separada pa' animar entrada
+    animateParticleEntrance(particle) {
+        // Estado inicial
+        particle.style.opacity = '0';
+        particle.style.transform = 'scale(0)';
+        particle.style.filter = 'blur(3px)';
+        
+        this.particlesContainer.appendChild(particle);
+        this.particles.push(particle);
+        
+        // Anima entrada
+        setTimeout(() => {
+            particle.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            particle.style.opacity = '1';
+            particle.style.transform = 'scale(1)';
+            particle.style.filter = 'blur(0px)';
+        }, 50);
+    }
+    
+    // Limpia todas las partículas
+    clearParticles() {
+        this.particles.forEach(particle => {
+            if (particle && particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        });
+        this.particles = [];
+    }
+    
+    // función pa' pausar/reanudar animaciones
+    pauseAnimations() {
+        this.particles.forEach(particle => {
+            particle.style.animationPlayState = 'paused';
+        });
+    }
+    
+    resumeAnimations() {
+        this.particles.forEach(particle => {
+            particle.style.animationPlayState = 'running';
+        });
     }
 }
 
@@ -465,6 +880,8 @@ class Utils {
         });
     }
 }
+
+
 
 // ================================
 // INICIALIZACIÓN

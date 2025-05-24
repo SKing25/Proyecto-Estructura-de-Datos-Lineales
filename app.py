@@ -466,4 +466,4 @@ def eliminar_circular():
     )
 
 if __name__ == '__main__': # Si este archivo se ejecuta directamente
-    app.run(debug=True) # Inicia la aplicación Flask en modo de depuración
+    app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
