@@ -6,6 +6,11 @@ from functools import wraps
 
 app = Flask(__name__) # Inicializa la aplicación Flask
 
+# Ruta principal - Menú
+@app.route('/') # Define la ruta para la página principal
+def index():
+    return render_template('index.html') # Renderiza la plantilla index.html
+
 def benchmark(func):
     @wraps(func) # Decorador para mantener la firma original de la función
     def wrapper(*args, **kwargs): # Define una función interna que acepta cualquier número de argumentos y palabras clave.
@@ -82,28 +87,14 @@ class ListaEnlazada:
 
 lista = ListaEnlazada() # Crea una instancia de la lista enlazada simple
 
-# Ruta principal - Menú
-@app.route('/') # Define la ruta para la página principal
-def index():
-    return render_template('index.html') # Renderiza la plantilla index.html
-
 # Rutas para Lista Simple
 @app.route('/lista-simple') # Define la ruta para la lista simple
 def lista_simple():
     datos = lista.obtener_lista() # Obtiene los datos de la lista
     df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
-    resultado_busqueda = request.args.get('resultado') # Obtiene el resultado de la búsqueda de la URL
-    mensaje_busqueda = '' # Inicializa el mensaje de búsqueda
-    if resultado_busqueda is not None: # Si hay un resultado de búsqueda
-        if int(resultado_busqueda) >= 0: # Si el resultado es mayor o igual a 0
-            mensaje_busqueda = f'Elemento encontrado en la posición {resultado_busqueda}' # Mensaje de éxito
-        else:
-            mensaje_busqueda = 'Elemento no encontrado' # Mensaje de error
-
     return render_template( # Renderiza la plantilla lista_simple.html
         'lista_simple.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda=mensaje_busqueda, # Mensaje de búsqueda
         lista=lista) # Pasa la lista como contexto a la plantilla
 
 @app.route('/lista-simple/buscar', methods=['POST']) # Define la ruta para buscar un elemento en la lista simple
@@ -138,7 +129,6 @@ def insertar():
     return render_template( # Renderiza la plantilla lista_simple.html
         'lista_simple.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda='', # Mensaje de búsqueda vacío
         lista=lista, # Pasa la lista como contexto a la plantilla
         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
         memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
@@ -160,7 +150,6 @@ def eliminar():
     return render_template( # Renderiza la plantilla lista_simple.html
         'lista_simple.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda='', # Mensaje de búsqueda vacío
         lista=lista, # Pasa la lista como contexto a la plantilla
         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
         memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
@@ -240,17 +229,8 @@ lista_doble = ListaEnlazadaDoble() # Crea una instancia de la lista enlazada dob
 def mostrar_lista_doble():
     datos = lista_doble.obtener_lista() # Obtiene los datos de la lista
     df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
-    resultado_busqueda = request.args.get('resultado') # Obtiene el resultado de la búsqueda de la URL
-    mensaje_busqueda = '' # Inicializa el mensaje de búsqueda
-    if resultado_busqueda is not None: # Si hay un resultado de búsqueda
-        if int(resultado_busqueda) >= 0: # Si el resultado es mayor o igual a 0
-            mensaje_busqueda = f'Elemento encontrado en la posición {resultado_busqueda}' # Mensaje de éxito
-        else:
-            mensaje_busqueda = 'Elemento no encontrado' # Mensaje de error
-
     return render_template('lista_doble.html', # Renderiza la plantilla lista_doble.html
                          datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-                         mensaje_busqueda=mensaje_busqueda, # Mensaje de búsqueda
                          lista=lista_doble) # Pasa la lista como contexto a la plantilla
 
 @app.route('/lista-doble/buscar', methods=['POST']) # Define la ruta para buscar un elemento en la lista doble
@@ -285,7 +265,6 @@ def insertar_doble():
     return render_template( # Renderiza la plantilla lista_doble.html
         'lista_doble.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda='', # Mensaje de búsqueda vacío
         lista=lista_doble, # Pasa la lista como contexto a la plantilla
         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
         memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
@@ -307,7 +286,6 @@ def eliminar_doble():
     return render_template( # Renderiza la plantilla lista_doble.html
         'lista_doble.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda='', # Mensaje de búsqueda vacío
         lista=lista_doble, # Pasa la lista como contexto a la plantilla
         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
         memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
@@ -392,17 +370,8 @@ lista_circular = ListaCircular() # Crea una instancia de la lista circular
 def mostrar_lista_circular():
     datos = lista_circular.obtener_lista() # Obtiene los datos de la lista
     df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
-    resultado_busqueda = request.args.get('resultado') # Obtiene el resultado de la búsqueda de la URL
-    mensaje_busqueda = '' # Inicializa el mensaje de búsqueda
-    if resultado_busqueda is not None: # Si hay un resultado de búsqueda
-        if int(resultado_busqueda) >= 0: # Si el resultado es mayor o igual a 0
-            mensaje_busqueda = f'Elemento encontrado en la posición {resultado_busqueda}' # Mensaje de éxito
-        else:
-            mensaje_busqueda = 'Elemento no encontrado' # Mensaje de error
-
     return render_template('lista_circular.html', # Renderiza la plantilla lista_circular.html
                          datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-                         mensaje_busqueda=mensaje_busqueda, # Mensaje de búsqueda
                          lista=lista_circular) # Pasa la lista como contexto a la plantilla
 
 @app.route('/lista-circular/buscar', methods=['POST']) # Define la ruta para buscar un elemento en la lista circular
@@ -437,7 +406,6 @@ def insertar_circular():
     return render_template( # Renderiza la plantilla lista_circular.html
         'lista_circular.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda='', # Mensaje de búsqueda vacío
         lista=lista_circular, # Pasa la lista como contexto a la plantilla
         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
         memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
@@ -459,11 +427,113 @@ def eliminar_circular():
     return render_template( # Renderiza la plantilla lista_circular.html
         'lista_circular.html',
         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
-        mensaje_busqueda='', # Mensaje de búsqueda vacío
         lista=lista_circular, # Pasa la lista como contexto a la plantilla
         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
         memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
     )
 
+#-----------------------Pila basada en lista enlazada-----------------------------
+
+class PilaLista:
+    def __init__(self):
+        self.tope = None
+        self.tamaño = 0
+
+    @benchmark
+    def push(self, dato):
+        nuevo_nodo = Nodo(dato)
+        nuevo_nodo.siguiente = self.tope
+        self.tope = nuevo_nodo
+        self.tamaño += 1
+
+    @benchmark
+    def pop(self):
+        if not self.tope:
+            return None
+        dato = self.tope.dato
+        self.tope = self.tope.siguiente
+        self.tamaño -= 1
+        return dato
+
+    @benchmark
+    def peek(self):
+        if not self.tope:
+            return None
+        return self.tope.dato
+
+    def obtener_pila(self):
+        datos = []
+        actual = self.tope
+        while actual:
+            datos.append(actual.dato)
+            actual = actual.siguiente
+        return datos
+
+pila_lista = PilaLista() # Crea una instancia de la pila basada en lista enlazada
+
+@app.route('/pila-lista')
+def mostrar_pila_lista():
+    datos = pila_lista.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template( # Renderiza la plantilla pila_lista.html
+        'pila_lista.html',
+        datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+        lista=pila_lista, # Pasa la lista como contexto a la plantilla
+    )
+
+@app.route('/pila-lista/push', methods=['POST']) # Define la ruta para insertar un elemento en la pila
+def push_pila_lista():
+    valor = request.form['valor'] # Obtiene el valor a insertar del formulario
+    tiempos = [] # Inicializa una lista para almacenar los tiempos
+    memorias = [] # Inicializa una lista para almacenar las memorias
+    for val in valor.split(','): # Recorre los valores separados por comas
+        _, t, m = pila_lista.push(val.strip()) # Llama a la función push y obtiene el tiempo y memoria
+        tiempos.append(t) # Agrega el tiempo a la lista de tiempos
+        memorias.append(m) # Agrega la memoria a la lista de memorias
+    tiempo_total = sum(tiempos) # Suma todos los tiempos
+    memoria_total = sum(memorias) # Suma todas las memorias
+
+    datos = pila_lista.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template( # Renderiza la plantilla pila_lista.html
+        'pila_lista.html',
+        datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+        lista=pila_lista, # Pasa la lista como contexto a la plantilla
+        tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
+        memorias=f"{memoria_total:.6f} MB" # Memoria total utilizada
+    )
+
+@app.route('/pila-lista/pop', methods=['POST']) # Define la ruta para eliminar un elemento de la pila
+def pop_pila_lista():
+    dato, tiempo, memoria = pila_lista.pop() # Llama a la función pop y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento extraído: {dato}' if dato else 'Pila vacía' # Mensaje de extracción
+
+    datos = pila_lista.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template( # Renderiza la plantilla pila_lista.html
+        'pila_lista.html',
+        datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+        lista=pila_lista, # Pasa la lista como contexto a la plantilla
+        mensaje_busqueda=mensaje, # Mensaje de extracción
+        tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+        memorias=f"{memoria:.6f} MB" # Memoria utilizada
+    )
+
+@app.route('/pila-lista/peek', methods=['POST']) # Define la ruta para ver el elemento en la parte superior de la pila
+def peek_pila_lista():
+    dato, tiempo, memoria = pila_lista.peek() # Llama a la función peek y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento en el tope: {dato}' if dato else 'Pila vacía' # Mensaje de vista
+
+    datos = pila_lista.obtener_pila() # Obtiene los datos de la pila
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template( # Renderiza la plantilla pila_lista.html
+        'pila_lista.html',
+        datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+        lista=pila_lista, # Pasa la lista como contexto a la plantilla
+        mensaje_busqueda=mensaje, # Mensaje de vista
+        tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+        memorias=f"{memoria:.6f} MB" # Memoria utilizada
+    )
+
 if __name__ == '__main__': # Si este archivo se ejecuta directamente
-    app.run(debug=True) # Inicia la aplicación Flask en modo de depuración
+    app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
