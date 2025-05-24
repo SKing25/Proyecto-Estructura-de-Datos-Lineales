@@ -44,13 +44,27 @@
                         </div>
                     </div>
 
+                    <div class="card" data-url="/lista-circular">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/lista-circular.jpg') }}" alt="Lista Enlazada Circular" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Lista Enlazada Circular</h3>
+                            <p>El último elemento apunta al primero, formando un círculo</p>
+                            <div class="card-features">
+                                <span class="feature">Recorrido infinito</span>
+                                <span class="feature">Round Robin</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card coming-soon">
                         <div class="card-image">
                             <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
                         </div>
                         <div class="card-content">
                             <h3>Más Estructuras</h3>
-                            <p>Próximamente más estructuras de datos, cuando santiago o Mariana decidan chambear.</p>
+                            <p>Próximamente más estructuras de datos, cuando Santiago o Mariana decidan chambear.</p>
                             <div class="card-features">
                                 <span class="feature">Cuando Santiago chambee</span>
                             </div>
@@ -68,6 +82,7 @@
                 <span class="indicator active" data-slide="0"></span>
                 <span class="indicator" data-slide="1"></span>
                 <span class="indicator" data-slide="2"></span>
+                <span class="indicator" data-slide="3"></span>
             </div>
         </div>
 
@@ -79,6 +94,11 @@
         <div class="info-panel" id="infoPanel">
             <h3>Acerca de las Estructuras de Datos</h3>
             <p>Las estructuras de datos son formas de organizar y almacenar información de manera eficiente. Cada estructura tiene sus propias ventajas y casos de uso específicos.</p>
+            <ul style="text-align: left; margin-top: 1rem;">
+                <li><strong>Lista Simple:</strong> Ideal para inserción frecuente al final</li>
+                <li><strong>Lista Doble:</strong> Mejor para navegación bidireccional</li>
+                <li><strong>Lista Circular:</strong> Perfecta para algoritmos de Round Robin</li>
+            </ul>
         </div>
     </div>
 

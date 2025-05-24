@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Enlazada Circular</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <a href="/" class="back-btn">← Volver al Menú</a>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Lista Enlazada Circular</h1>
+            <p>Estructura donde el último elemento apunta al primero, formando un círculo</p>
+        </div>
+
+        <div class="operations">
+            <div class="operation-card">
+                <h3>Insertar Elementos</h3>
+                <form action="/lista-circular/insertar" method="post">
+                    <input type="text" name="valor" placeholder="Ingrese valores separados por comas" required>
+                    <input type="submit" value="Insertar">
+                </form>
+                <small>Ejemplo: 1,2,3 o valor1,valor2,valor3</small>
+            </div>
+
+            <div class="operation-card">
+                <h3>Buscar Elemento</h3>
+                <form action="/lista-circular/buscar" method="post">
+                    <input type="text" name="valor" placeholder="Valor a buscar" required>
+                    <input type="submit" value="Buscar">
+                </form>
+            </div>
+
+            <div class="operation-card">
+                <h3>Eliminar Elementos</h3>
+                <form action="/lista-circular/eliminar" method="post">
+                    <input type="text" name="valor" placeholder="Valores a eliminar separados por comas" required>
+                    <input type="submit" value="Eliminar">
+                </form>
+                <small>Ejemplo: 1,2,3 o valor1,valor2,valor3</small>
+            </div>
+        </div>
+
+        {% if mensaje_busqueda %}
+        <div class="message">
+            {{ mensaje_busqueda }}
+        </div>
+        {% endif %}
+
+        <div class="list-container">
+            {% if datos %}
+                {{ datos|safe }}
+            {% else %}
+                <div class="message">
+                    La lista circular está vacía. Agrega algunos elementos para comenzar.
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="list-info">
+            <p><strong>Tamaño:</strong> {{ lista.tamaño }} elementos</p>
+            <p><strong>Tipo:</strong> Lista Enlazada Circular</p>
+            {% if tiempos %}
+                <p><strong>Tiempo:</strong> {{ tiempos }}</p>
+            {% endif %}
+            {% if memorias %}
+                <p><strong>Memoria:</strong> {{ memorias }}</p>
+            {% endif %}
+        </div>
+
+        <div class="info-panel" style="display: block; margin-top: 2rem;">
+            <h3>Características de la Lista Circular</h3>
+            <p><strong>Ventajas:</strong> Permite recorrido infinito, útil para algoritmos de Round Robin, no hay NULL al final.</p>
+            <p><strong>Desventajas:</strong> Riesgo de bucles infinitos si no se maneja correctamente, requiere cuidado especial en la implementación.</p>
+            <p><strong>Complejidad:</strong> Inserción O(1), Búsqueda O(n), Eliminación O(n)</p>
+        </div>
+    </div>
+
+    <script>
+        // Efecto visual para mostrar la naturaleza circular
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('table');
+            if (table) {
+                const rows = table.querySelectorAll('tbody tr');
+                if (rows.length > 0) {
+                    // Agregar indicador visual de circularidad
+                    const lastRow = rows[rows.length - 1];
+                    const firstRow = rows[0];
+                    
+                    if (lastRow && firstRow) {
+                        lastRow.style.borderBottom = '3px solid #667eea';
+                        lastRow.title = 'Este elemento apunta de vuelta al primero';
+                        firstRow.style.borderTop = '3px solid #667eea';
+                        firstRow.title = 'Primer elemento (destino del último)';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
