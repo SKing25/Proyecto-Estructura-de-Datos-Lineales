@@ -11,6 +11,9 @@ app = Flask(__name__) # Inicializa la aplicación Flask
 def index():
     return render_template('index.html') # Renderiza la plantilla index.html
 
+if __name__ == '__main__': # Si este archivo se ejecuta directamente
+    app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
+
 def benchmark(func):
     @wraps(func) # Decorador para mantener la firma original de la función
     def wrapper(*args, **kwargs): # Define una función interna que acepta cualquier número de argumentos y palabras clave.
@@ -24,66 +27,66 @@ def benchmark(func):
         return result, tiempo, memoria # Retorna el resultado de la función original, tiempo y la diferencia de memoria
     return wrapper # Devuelve la función decorada (el wrapper).
 
-# -------------------------------Lista Enlazda Simple---------------------------------
+# -------------------------------Lista Enlazada Simple---------------------------------
 
 class Nodo:
     def __init__(self, dato):
-        self.dato = dato # Almacena el dato
-        self.siguiente = None # Inicializa el siguiente nodo como None
+        self.dato = dato
+        self.siguiente = None
 
 class ListaEnlazada:
     def __init__(self):
-        self.cabeza = None # Inicializa la cabeza de la lista como None
-        self.ultimo = None # Inicializa el último nodo como None
-        self.tamaño = 0 # Inicializa el tamaño de la lista como 0
+        self.cabeza = None
+        self.ultimo = None
+        self.tamaño = 0
 
-    @benchmark # Decorador para medir el tiempo y memoria de la función
+    @benchmark
     def insertar(self, dato):
-        nuevo_nodo = Nodo(dato) # Crea un nuevo nodo con el dato dado
-        if not self.cabeza: # Si la lista está vacía
-            self.cabeza = nuevo_nodo # Asigna el nuevo nodo como cabeza
-            self.ultimo = nuevo_nodo # Asigna el nuevo nodo como último
+        nuevo_nodo = Nodo(dato)
+        if not self.cabeza:
+            self.cabeza = nuevo_nodo
+            self.ultimo = nuevo_nodo
         else:
-            self.ultimo.siguiente = nuevo_nodo # Asigna el siguiente del último nodo al nuevo nodo
-            self.ultimo = nuevo_nodo # Actualiza el último nodo a ser el nuevo nodo
-        self.tamaño += 1 # Incrementa el tamaño de la lista
+            self.ultimo.siguiente = nuevo_nodo
+            self.ultimo = nuevo_nodo
+        self.tamaño += 1
 
-    @benchmark # Decorador para medir el tiempo y memoria de la función
+    @benchmark
     def eliminar(self, dato):
-        if not self.cabeza: # Si la lista está vacía
-            return # No hay nada que eliminar
+        if not self.cabeza:
+            return
 
-        if self.cabeza.dato == dato: # Si el dato a eliminar es la cabeza
-            self.cabeza = self.cabeza.siguiente # Actualiza la cabeza al siguiente nodo
-            self.tamaño -= 1 # Decrementa el tamaño de la lista
-            return # Sale de la función
+        if self.cabeza.dato == dato:
+            self.cabeza = self.cabeza.siguiente
+            self.tamaño -= 1
+            return
 
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        while actual.siguiente and actual.siguiente.dato != dato: # Recorre la lista hasta encontrar el nodo a eliminar
-            actual = actual.siguiente # Avanza al siguiente nodo
+        actual = self.cabeza
+        while actual.siguiente and actual.siguiente.dato != dato:
+            actual = actual.siguiente
 
-        if actual.siguiente: # Si se encontró el nodo a eliminar
-            actual.siguiente = actual.siguiente.siguiente # Salta el nodo a eliminar
-            self.tamaño -= 1 # Decrementa el tamaño de la lista
+        if actual.siguiente:
+            actual.siguiente = actual.siguiente.siguiente
+            self.tamaño -= 1
 
     def obtener_lista(self):
-        datos = [] # Inicializa una lista vacía para almacenar los datos
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        while actual: # Recorre la lista
-            datos.append(actual.dato) # Agrega el dato del nodo actual a la lista de datos
-            actual = actual.siguiente # Avanza al siguiente nodo
-        return datos # Retorna la lista de datos
+        datos = []
+        actual = self.cabeza
+        while actual:
+            datos.append(actual.dato)
+            actual = actual.siguiente
+        return datos
 
-    @benchmark # Decorador para medir el tiempo y memoria de la función
+    @benchmark
     def buscar(self, dato):
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        posicion = 0 # Inicializa la posición como 0
-        while actual: # Recorre la lista
-            if actual.dato == dato: # Si el dato del nodo actual es igual al dato buscado
-                return posicion # Retorna la posición del nodo
-            actual = actual.siguiente # Avanza al siguiente nodo
-            posicion += 1 # Incrementa la posición
-        return -1 # Retorna -1 si no se encontró el dato
+        actual = self.cabeza
+        posicion = 0
+        while actual:
+            if actual.dato == dato:
+                return posicion
+            actual = actual.siguiente
+            posicion += 1
+        return -1
 
 lista = ListaEnlazada() # Crea una instancia de la lista enlazada simple
 
@@ -159,68 +162,68 @@ def eliminar():
 
 class NodoDoble:
     def __init__(self, dato):
-        self.dato = dato # Almacena el dato
-        self.siguiente = None # Inicializa el siguiente nodo como None
-        self.anterior = None # Inicializa el nodo anterior como None
+        self.dato = dato
+        self.siguiente = None
+        self.anterior = None
 
 class ListaEnlazadaDoble:
     def __init__(self):
-        self.cabeza = None # Inicializa la cabeza de la lista como None
-        self.ultimo = None # Inicializa el último nodo como None
-        self.tamaño = 0 # Inicializa el tamaño de la lista como 0
+        self.cabeza = None
+        self.ultimo = None
+        self.tamaño = 0
 
     @benchmark
     def insertar(self, dato):
-        nuevo_nodo = NodoDoble(dato) # Crea un nuevo nodo con el dato dado
-        if not self.cabeza: # Si la lista está vacía
-            self.cabeza = nuevo_nodo # Asigna el nuevo nodo como cabeza
-            self.ultimo = nuevo_nodo # Asigna el nuevo nodo como último
+        nuevo_nodo = NodoDoble(dato)
+        if not self.cabeza:
+            self.cabeza = nuevo_nodo
+            self.ultimo = nuevo_nodo
         else:
-            nuevo_nodo.anterior = self.ultimo # Asigna el nodo anterior al último nodo
-            self.ultimo.siguiente = nuevo_nodo # Asigna el siguiente del último nodo al nuevo nodo
-            self.ultimo = nuevo_nodo # Actualiza el último nodo a ser el nuevo nodo
-        self.tamaño += 1 # Incrementa el tamaño de la lista
+            nuevo_nodo.anterior = self.ultimo
+            self.ultimo.siguiente = nuevo_nodo
+            self.ultimo = nuevo_nodo
+        self.tamaño += 1
 
     @benchmark
     def eliminar(self, dato):
-        if not self.cabeza: # Si la lista está vacía
-            return # No hay nada que eliminar
+        if not self.cabeza:
+            return
 
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        while actual and actual.dato != dato: # Recorre la lista hasta encontrar el nodo a eliminar
-            actual = actual.siguiente # Avanza al siguiente nodo
+        actual = self.cabeza
+        while actual and actual.dato != dato:
+            actual = actual.siguiente
 
-        if actual: # Si se encontró el nodo a eliminar
-            if actual.anterior: # Si no es el primer nodo
-                actual.anterior.siguiente = actual.siguiente # Salta el nodo a eliminar
+        if actual:
+            if actual.anterior:
+                actual.anterior.siguiente = actual.siguiente
             else:
-                self.cabeza = actual.siguiente # Actualiza la cabeza al siguiente nodo
+                self.cabeza = actual.siguiente
 
-            if actual.siguiente: # Si no es el último nodo
-                actual.siguiente.anterior = actual.anterior # Salta el nodo a eliminar
+            if actual.siguiente:
+                actual.siguiente.anterior = actual.anterior
             else:
-                self.ultimo = actual.anterior # Actualiza el último nodo al anterior
+                self.ultimo = actual.anterior
 
-            self.tamaño -= 1 # Decrementa el tamaño de la lista
+            self.tamaño -= 1
 
     def obtener_lista(self):
-        datos = [] # Inicializa una lista vacía para almacenar los datos
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        while actual: # Recorre la lista
-            datos.append(actual.dato) # Agrega el dato del nodo actual a la lista de datos
-            actual = actual.siguiente # Avanza al siguiente nodo
-        return datos # Retorna la lista de datos
+        datos = []
+        actual = self.cabeza
+        while actual:
+            datos.append(actual.dato)
+            actual = actual.siguiente
+        return datos
 
     @benchmark
     def buscar(self, dato):
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        posicion = 0 # Inicializa la posición como 0
-        while actual: # Recorre la lista
-            if actual.dato == dato: # Si el dato del nodo actual es igual al dato buscado
-                return posicion # Retorna la posición del nodo
-            actual = actual.siguiente # Avanza al siguiente nodo
-            posicion += 1 # Incrementa la posición
-        return -1 # Retorna -1 si no se encontró el dato
+        actual = self.cabeza
+        posicion = 0
+        while actual:
+            if actual.dato == dato:
+                return posicion
+            actual = actual.siguiente
+            posicion += 1
+        return -1
 
 lista_doble = ListaEnlazadaDoble() # Crea una instancia de la lista enlazada doble
 
@@ -295,74 +298,74 @@ def eliminar_doble():
 
 class ListaCircular:
     def __init__(self):
-        self.cabeza = None # Inicializa la cabeza de la lista como None
-        self.ultimo = None # Inicializa el último nodo como None
-        self.tamaño = 0 # Inicializa el tamaño de la lista como 0
+        self.cabeza = None
+        self.ultimo = None
+        self.tamaño = 0
 
     @benchmark
     def insertar(self, dato):
-        nuevo_nodo = Nodo(dato) # Crea un nuevo nodo con el dato dado
-        if not self.cabeza: # Si la lista está vacía
-            self.cabeza = nuevo_nodo # Asigna el nuevo nodo como cabeza
-            self.ultimo = nuevo_nodo # Asigna el nuevo nodo como último
-            nuevo_nodo.siguiente = nuevo_nodo # Apunta a sí mismo
+        nuevo_nodo = Nodo(dato)
+        if not self.cabeza:
+            self.cabeza = nuevo_nodo
+            self.ultimo = nuevo_nodo
+            nuevo_nodo.siguiente = nuevo_nodo
         else:
-            nuevo_nodo.siguiente = self.cabeza # Asigna el siguiente del nuevo nodo a la cabeza
-            self.ultimo.siguiente = nuevo_nodo # Asigna el siguiente del último nodo al nuevo nodo
-            self.ultimo = nuevo_nodo # Actualiza el último nodo a ser el nuevo nodo
-        self.tamaño += 1 # Incrementa el tamaño de la lista
+            nuevo_nodo.siguiente = self.cabeza
+            self.ultimo.siguiente = nuevo_nodo
+            self.ultimo = nuevo_nodo
+        self.tamaño += 1
 
     @benchmark
     def eliminar(self, dato):
-        if not self.cabeza: # Si la lista está vacía
-            return # No hay nada que eliminar
+        if not self.cabeza:
+            return
 
-        if self.cabeza.dato == dato: # Si el dato a eliminar es la cabeza
-            if self.tamaño == 1: # Si solo hay un nodo
-                self.cabeza = None # Actualiza la cabeza a None
-                self.ultimo = None # Actualiza el último nodo a None
+        if self.cabeza.dato == dato:
+            if self.tamaño == 1:
+                self.cabeza = None
+                self.ultimo = None
             else:
-                self.cabeza = self.cabeza.siguiente # Actualiza la cabeza al siguiente nodo
-                self.ultimo.siguiente = self.cabeza # Actualiza el siguiente del último nodo a la nueva cabeza
-            self.tamaño -= 1 # Decrementa el tamaño de la lista
-            return # Sale de la función
+                self.cabeza = self.cabeza.siguiente
+                self.ultimo.siguiente = self.cabeza
+            self.tamaño -= 1
+            return
 
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        while actual.siguiente != self.cabeza and actual.siguiente.dato != dato: # Recorre la lista hasta encontrar el nodo a eliminar
-            actual = actual.siguiente # Avanza al siguiente nodo
+        actual = self.cabeza
+        while actual.siguiente != self.cabeza and actual.siguiente.dato != dato:
+            actual = actual.siguiente
 
-        if actual.siguiente != self.cabeza: # Si se encontró el nodo a eliminar
-            if actual.siguiente == self.ultimo: # Si es el último nodo
-                self.ultimo = actual # Actualiza el último nodo al anterior
-            actual.siguiente = actual.siguiente.siguiente # Salta el nodo a eliminar
-            self.tamaño -= 1 # Decrementa el tamaño de la lista
+        if actual.siguiente != self.cabeza:
+            if actual.siguiente == self.ultimo:
+                self.ultimo = actual
+            actual.siguiente = actual.siguiente.siguiente
+            self.tamaño -= 1
 
     def obtener_lista(self):
-        if not self.cabeza: # Si la lista está vacía
-            return [] # Retorna una lista vacía
-        datos = [] # Inicializa una lista vacía para almacenar los datos
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        while True: # Recorre la lista
-            datos.append(actual.dato) # Agrega el dato del nodo actual a la lista de datos
-            actual = actual.siguiente # Avanza al siguiente nodo
-            if actual == self.cabeza: # Si se ha vuelto a la cabeza
-                break # Sale del bucle
-        return datos # Retorna la lista de datos
+        if not self.cabeza:
+            return []
+        datos = []
+        actual = self.cabeza
+        while True:
+            datos.append(actual.dato)
+            actual = actual.siguiente
+            if actual == self.cabeza:
+                break
+        return datos
 
     @benchmark
     def buscar(self, dato):
-        if not self.cabeza: # Si la lista está vacía
-            return -1 # Retorna -1
-        actual = self.cabeza # Inicializa el nodo actual como la cabeza
-        posicion = 0 # Inicializa la posición como 0
-        while True: # Recorre la lista
-            if actual.dato == dato: # Si el dato del nodo actual es igual al dato buscado
-                return posicion # Retorna la posición del nodo
-            actual = actual.siguiente # Avanza al siguiente nodo
-            posicion += 1 # Incrementa la posición
-            if actual == self.cabeza: # Si se ha vuelto a la cabeza
-                break # Sale del bucle
-        return -1 # Retorna -1 si no se encontró el dato
+        if not self.cabeza:
+            return -1
+        actual = self.cabeza
+        posicion = 0
+        while True:
+            if actual.dato == dato:
+                return posicion
+            actual = actual.siguiente
+            posicion += 1
+            if actual == self.cabeza:
+                break
+        return -1
 
 lista_circular = ListaCircular() # Crea una instancia de la lista circular
 
@@ -624,5 +627,100 @@ def peek_pila_arreglo():
                          tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
                          memorias=f"{memoria:.6f} MB") # Memoria utilizada
 
-if __name__ == '__main__': # Si este archivo se ejecuta directamente
-    app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
+#-------------------------------Cola Simple-------------------------------------
+
+class ColaSimple:
+    def __init__(self):
+        self.items = []
+        self.tamaño = 0
+
+    @benchmark
+    def encolar(self, dato):
+        self.items.append(dato)
+        self.tamaño += 1
+
+    @benchmark
+    def desencolar(self):
+        if self.esta_vacia():
+            return None
+        self.tamaño -= 1
+        return self.items.pop(0)
+
+    @benchmark
+    def buscar(self, dato):
+        try:
+            return self.items.index(dato)
+        except ValueError:
+            return -1
+
+    def esta_vacia(self):
+        return self.tamaño == 0
+
+    def obtener_cola(self):
+        return self.items
+
+    def peek(self):
+        return self.items[0] if not self.esta_vacia() else None
+
+cola_simple = ColaSimple()  # Instancia global de la cola
+
+@app.route('/cola-simple') # Define la ruta para la cola simple
+def mostrar_cola_simple():
+    datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=cola_simple) # Pasa la lista como contexto a la plantilla
+
+@app.route('/cola-simple/encolar', methods=['POST']) # Define la ruta para insertar un elemento en la cola simple
+def encolar():
+    valor = request.form['valor'] # Obtiene el valor a insertar del formulario
+    tiempos = [] # Inicializa una lista para almacenar los tiempos
+    memorias = [] # Inicializa una lista para almacenar las memorias
+    for val in valor.split(','): # Recorre los valores separados por comas
+        _, t, m = cola_simple.encolar(val.strip()) # Llama a la función encolar y obtiene el tiempo y memoria
+        tiempos.append(t) # Agrega el tiempo a la lista de tiempos
+        memorias.append(m) # Agrega la memoria a la lista de memorias
+    tiempo_total = sum(tiempos) # Suma todos los tiempos
+    memoria_total = sum(memorias) # Suma todas las memorias
+
+    datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    peek = f'Primer elemento en la cola: {cola_simple.peek()}' if not cola_simple.esta_vacia() else 'Cola vacía' # Mensaje de vista
+    return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=cola_simple, # Pasa la lista como contexto a la plantilla
+                         mensaje_busqueda=peek, # Mensaje de vista
+                         tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
+                         memorias=f"{memoria_total:.6f} MB") # Memoria total utilizada
+
+@app.route('/cola-simple/desencolar', methods=['POST']) # Define la ruta para eliminar un elemento de la cola simple
+def desencolar():
+    dato, tiempo, memoria = cola_simple.desencolar() # Llama a la función desencolar y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento desencolado: {dato}' if dato else 'Cola vacía' # Mensaje de extracción
+    peek = f'Primer elemento en la cola: {cola_simple.peek()}' if not cola_simple.esta_vacia() else 'Cola vacía' # Mensaje de vista
+    mensaje_completo = f'{mensaje} | {peek}' # Mensaje completo
+
+    datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=cola_simple, # Pasa la lista como contexto a la plantilla
+                         mensaje_busqueda=mensaje_completo, # Mensaje de extracción
+                         tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+                         memorias=f"{memoria:.6f} MB") # Memoria utilizada
+@app.route('/cola-simple/buscar', methods=['POST']) # Define la ruta para buscar un elemento en la cola simple
+def buscar_cola():
+    valor = request.form['valor'] # Obtiene el valor a buscar del formulario
+    posicion, tiempo, memoria = cola_simple.buscar(valor) # Llama a la función buscar y obtiene la posición, tiempo y memoria
+    datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
+    mensaje = f'Elemento {"encontrado en posición " + str(posicion) if posicion >= 0 else "no encontrado"}' # Mensaje de búsqueda
+    peek = f'Primer elemento en la cola: {cola_simple.peek()}' if not cola_simple.esta_vacia() else 'Cola vacía' # Mensaje de vista
+    mensaje_completo = f'{mensaje} | {peek}' # Mensaje completo
+    return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=cola_simple, # Pasa la lista como contexto a la plantilla
+                         mensaje_busqueda=mensaje_completo, # Mensaje de búsqueda
+                         tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+                         memorias=f"{memoria:.6f} MB") # Memoria utilizada
