@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <!-- Toggle de Tema -->
+    <div class="theme-toggle light" id="themeToggle">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </div>
+
+    <!-- Partículas de fondo animadas -->
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <a href="/" class="back-btn">← Volver al Menú</a>
     
     <div class="container">
@@ -17,7 +33,7 @@
 
         <div class="operations">
             <div class="operation-card">
-                <h3>Insertar Elementos</h3>
+                <h3>🔹 Insertar Elementos</h3>
                 <form action="/lista-circular/insertar" method="post">
                     <input type="text" name="valor" placeholder="Ingrese valores separados por comas" required>
                     <input type="submit" value="Insertar">
@@ -26,7 +42,7 @@
             </div>
 
             <div class="operation-card">
-                <h3>Buscar Elemento</h3>
+                <h3>🔍 Buscar Elemento</h3>
                 <form action="/lista-circular/buscar" method="post">
                     <input type="text" name="valor" placeholder="Valor a buscar" required>
                     <input type="submit" value="Buscar">
@@ -34,7 +50,7 @@
             </div>
 
             <div class="operation-card">
-                <h3>Eliminar Elementos</h3>
+                <h3>🗑️ Eliminar Elementos</h3>
                 <form action="/lista-circular/eliminar" method="post">
                     <input type="text" name="valor" placeholder="Valores a eliminar separados por comas" required>
                     <input type="submit" value="Eliminar">
@@ -60,13 +76,13 @@
         </div>
 
         <div class="list-info">
-            <p><strong>Tamaño:</strong> {{ lista.tamaño }} elementos</p>
-            <p><strong>Tipo:</strong> Lista Enlazada Circular</p>
+            <p><strong>📊 Tamaño:</strong> {{ lista.tamaño }} elementos</p>
+            <p><strong>🔄 Tipo:</strong> Lista Enlazada Circular</p>
             {% if tiempos %}
-                <p><strong>Tiempo:</strong> {{ tiempos }}</p>
+                <p><strong>⏱️ Tiempo:</strong> {{ tiempos }}</p>
             {% endif %}
             {% if memorias %}
-                <p><strong>Memoria:</strong> {{ memorias }}</p>
+                <p><strong>💾 Memoria:</strong> {{ memorias }}</p>
             {% endif %}
         </div>
 
@@ -78,26 +94,6 @@
         </div>
     </div>
 
-    <script>
-        // Efecto visual para mostrar la naturaleza circular
-        document.addEventListener('DOMContentLoaded', function() {
-            const table = document.querySelector('table');
-            if (table) {
-                const rows = table.querySelectorAll('tbody tr');
-                if (rows.length > 0) {
-                    // Agregar indicador visual de circularidad
-                    const lastRow = rows[rows.length - 1];
-                    const firstRow = rows[0];
-                    
-                    if (lastRow && firstRow) {
-                        lastRow.style.borderBottom = '3px solid #667eea';
-                        lastRow.title = 'Este elemento apunta de vuelta al primero';
-                        firstRow.style.borderTop = '3px solid #667eea';
-                        firstRow.title = 'Primer elemento (destino del último)';
-                    }
-                }
-            }
-        });
-    </script>
-</body>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </body>
 </html>

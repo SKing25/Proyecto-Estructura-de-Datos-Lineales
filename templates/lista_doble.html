@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <!-- Toggle de Tema -->
+    <div class="theme-toggle light" id="themeToggle">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </div>
+
+    <!-- Partículas de fondo animadas -->
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <a href="/" class="back-btn">← Volver al Menú</a>
     
     <div class="container">
@@ -17,7 +33,7 @@
         
         <div class="operations">
             <div class="operation-card">
-                <h3> Insertar elemento</h3>
+                <h3>🔹 Insertar elemento</h3>
                 <form action="/lista-doble/insertar" method="post">
                     <input type="text" name="valor" placeholder="Valor a insertar (separar con comas para múltiples)" required>
                     <input type="submit" value="Insertar">
@@ -25,7 +41,7 @@
             </div>
             
             <div class="operation-card">
-                <h3> Eliminar elemento</h3>
+                <h3>🗑️ Eliminar elemento</h3>
                 <form action="/lista-doble/eliminar" method="post">
                     <input type="text" name="valor" placeholder="Valor a eliminar (separar con comas para múltiples)" required>
                     <input type="submit" value="Eliminar">
@@ -33,7 +49,7 @@
             </div>
             
             <div class="operation-card">
-                <h3> Buscar elemento</h3>
+                <h3>🔍 Buscar elemento</h3>
                 <form action="/lista-doble/buscar" method="post">
                     <input type="text" name="valor" placeholder="Valor a buscar" required>
                     <input type="submit" value="Buscar">
@@ -47,18 +63,26 @@
         </div>
         {% endif %}
         
-        <h2> Elementos en la lista:</h2>
+        <h2>📋 Elementos en la lista:</h2>
         <div class="list-container">
             {{ datos|safe }}
         </div>
         
         <div class="list-info">
-            <p> Tamaño de la lista: {{ lista.tamaño }}</p>
+            <p>📊 Tamaño de la lista: {{ lista.tamaño }}</p>
             {% if tiempos %}
-              <p> Tiempo de ejecución: {{ tiempos }}</p>
-              <p> Memoria utilizada: {{ memorias }}</p>
+              <p>⏱️ Tiempo de ejecución: {{ tiempos }}</p>
+              <p>💾 Memoria utilizada: {{ memorias }}</p>
             {% endif %}
         </div>
+
+        <div class="info-panel" style="display: block; margin-top: 2rem;">
+            <h3>Características de la Lista Doble</h3>
+            <p><strong>Ventajas:</strong> Navegación bidireccional, eliminación eficiente conociendo el nodo, inserción flexible.</p>
+            <p><strong>Desventajas:</strong> Mayor uso de memoria por los punteros adicionales, complejidad de implementación.</p>
+            <p><strong>Complejidad:</strong> Inserción O(1), Búsqueda O(n), Eliminación O(1) si se conoce el nodo</p>
+        </div>
     </div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

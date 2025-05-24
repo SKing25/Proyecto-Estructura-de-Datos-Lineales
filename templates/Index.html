@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <!-- Toggle de Tema -->
+    <div class="theme-toggle light" id="themeToggle">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌒</span>
+    </div>
+
+    <!-- Partículas de fondo animadas -->
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <div class="main-container">
         <header class="header">
             <h1>Estructuras de Datos</h1>
@@ -101,60 +117,6 @@
             </ul>
         </div>
     </div>
-
-    <script>
-        let currentSlide = 0;
-        const cards = document.querySelectorAll('.card');
-        const indicators = document.querySelectorAll('.indicator');
-        const track = document.getElementById('carouselTrack');
-        
-        function updateCarousel() {
-            cards.forEach((card, index) => {
-                card.classList.toggle('active', index === currentSlide);
-            });
-            
-            indicators.forEach((indicator, index) => {
-                indicator.classList.toggle('active', index === currentSlide);
-            });
-            
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
-        
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            currentSlide = (currentSlide + 1) % cards.length;
-            updateCarousel();
-        });
-        
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            currentSlide = (currentSlide - 1 + cards.length) % cards.length;
-            updateCarousel();
-        });
-        
-        indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => {
-                currentSlide = index;
-                updateCarousel();
-            });
-        });
-        
-        document.getElementById('selectBtn').addEventListener('click', () => {
-            const activeCard = cards[currentSlide];
-            const url = activeCard.dataset.url;
-            if (url && !activeCard.classList.contains('coming-soon')) {
-                window.location.href = url;
-            }
-        });
-        
-        function showInfo() {
-            const infoPanel = document.getElementById('infoPanel');
-            infoPanel.style.display = infoPanel.style.display === 'block' ? 'none' : 'block';
-        }
-        
-        // cada 5 segundos cambia de slide
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % cards.length;
-            updateCarousel();
-        }, 5000);
-    </script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
