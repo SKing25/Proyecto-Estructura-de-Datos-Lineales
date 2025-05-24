@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Configuración base de la página -->
+  <meta charset="UTF-8"> <!-- Esto permite que puedas usar tildes y eñes sin problema -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Para que se vea bien en celular también -->
+
+  <!-- El título que aparecerá en la pestaña del navegador -->
+  <title>Nombre de la Estructura</title>
+
+  <!-- Enlace al archivo de estilos CSS (Probablemente no moveras esto) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+  <!-- CAMBIO DE TEMA (modo claro/oscuro) -->
+  <div class="theme-toggle light" id="themeToggle">
+    <span class="theme-icon sun-icon">☀️</span> <!-- Ícono de sol (tema claro) -->
+    <span class="theme-icon moon-icon">🌙</span> <!-- Ícono de luna (tema oscuro) -->
+  </div>
+
+  <!--  EFECTO VISUAL DE FONDO, PUEDES BORRARLO SI NO TE GUSTA, igual no funciona como debería -->
+  <div class="background-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!--  BOTÓN PARA VOLVER AL MENÚ PRINCIPAL -->
+  <a href="/" class="back-btn">← Volver al Menú</a>
+
+  <!--  CONTENEDOR PRINCIPAL DE TODA LA PÁGINA -->
+  <div class="container">
+
+    <!--  ENCABEZADO CON EL NOMBRE DE LA ESTRUCTURA -->
+    <div class="page-header">
+      <h1>Nombre de la Estructura</h1> <!-- Ejemplo: Lista Enlazada Simple -->
+      <p>Aquí puedes escribir una breve descripción de cómo funciona esta estructura</p>
+    </div>
+
+    <!--  OPERACIONES DISPONIBLES (Insertar, Buscar, Eliminar) -->
+    <div class="operations">
+
+      <!--  FORMULARIO PARA INSERTAR ELEMENTOS -->
+      <div class="operation-card">
+        <h3>🔹 Insertar Elemento</h3>
+        <form action="/ruta/insertar" method="post">
+          <!-- Cambia la ruta para que se conecte con tu backend -->
+          <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>
+          <input type="submit" value="Insertar">
+        </form>
+      </div>
+
+      <!--  PARA BUSCAR UN ELEMENTO EN LA ESTRUCTURA -->
+      <div class="operation-card">
+        <h3> Buscar Elemento</h3>
+        <form action="/nombreEDL/buscar" method="post">
+          <input type="text" name="valor" placeholder="Valor a buscar" required>
+          <input type="submit" value="Buscar">
+        </form>
+      </div>
+
+      <!-- PARA ELIMINAR UNO O VARIOS ELEMENTOS -->
+      <div class="operation-card">
+        <h3> Eliminar Elemento</h3>
+        <form action="/ruta/eliminar" method="post">
+          <input type="text" name="valor" placeholder="Ej: 10, 30" required>
+          <input type="submit" value="Eliminar">
+        </form>
+      </div>
+
+    </div> <!-- Fin del bloque de operaciones -->
+
+    <!--  MENSAJE QUE MUESTRA EL RESULTADO DE ALGUNA ACCIÓN -->
+    {% if mensaje %}
+    <div class="message">{{ mensaje }}</div> <!-- Esto lo llena santiago automáticamente -->
+    {% endif %}
+
+    <!-- CONTENEDOR DONDE SE VISUALIZARÁ LA ESTRUCTURA EN PANTALLA -->
+    <div class="list-container">
+      {% if datos %}
+        {{ datos|safe }} <!-- Aquí se dibuja visualmente la estructura: nodos, flechas, etc. -->
+      {% else %}
+        <div class="message">Aún no hay elementos. Inserta para comenzar.</div>
+      {% endif %}
+    </div>
+
+    <!--  INFORMACIÓN GENERAL SOBRE LA ESTRUCTURA ACTUAL -->
+    <div class="list-info">
+      <p><strong> Tamaño:</strong> {{ lista.tamaño }}</p> <!-- Cuántos elementos hay -->
+      <p><strong> Tipo:</strong> Nombre de la Estructura</p> <!-- Ej: Cola Circular -->
+
+      {% if tiempos %}
+        <p><strong>⏱ Tiempo:</strong> {{ tiempos }}</p> <!-- Tiempo de ejecución de operaciones -->
+      {% endif %}
+      {% if memorias %}
+        <p><strong> Memoria:</strong> {{ memorias }}</p> <!-- Memoria consumida -->
+      {% endif %}
+    </div>
+
+    <!--  PANEL QUE MUESTRA INFORMACIÓN ACADÉMICA Y TEÓRICA DE LA ESTRUCTURA -->
+    <div class="info-panel" style="margin-top: 2rem;">
+      <h3>Sobre esta estructura</h3>
+      <p><strong>Ventajas:</strong> Escribe aquí lo que hace que esta estructura sea útil</p>
+      <p><strong>Desventajas:</strong> También menciona sus debilidades o riesgos</p>
+      <p><strong>Complejidad:</strong> Inserción O(…), Búsqueda O(…), Eliminación O(…)</p>
+    </div>
+
+  </div> <!-- Fin del contenedor principal -->
+
+  <!--  ARCHIVO DE JAVASCRIPT PARA ANIMACIONES, FUNCIONALIDADES, ETC. -->
+    <!--  NI LE MUEVAN A ESTE, QUE PUEDEN ROMPER MUCHAS COSAS -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
