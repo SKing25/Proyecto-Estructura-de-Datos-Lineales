@@ -106,15 +106,16 @@
                             </div>
                         </div>
 
-                        <div class="card coming-soon">
+                        <div class="card active" data-url="/pila-arreglo">
                             <div class="card-image">
-                                <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
+                                <img src="{{ url_for('static', filename='images/pila-arreglo.jpg') }}" alt="Pila con arreglo" />
                             </div>
                             <div class="card-content">
                                 <h3>Pila con Arreglo</h3>
                                 <p>Estructura LIFO implementada con arreglo estático</p>
                                 <div class="card-features">
-                                    <span class="feature">Próximamente</span>
+                                    <span class="feature">Push O(1)</span>
+                                    <span class="feature">Pop O(1)</span>
                                 </div>
                             </div>
                         </div>
@@ -122,15 +123,16 @@
 
                     <!-- CONTENIDO PARA COLAS -->
                     <div class="edl-content hidden" id="colas-content">
-                        <div class="card coming-soon active">
+                        <div class="card active" id="cola-lista" data-url="/cola-lista">
                             <div class="card-image">
-                                <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
+                                <img src="{{ url_for('static', filename='images/cola-lista.jpg') }}" alt="Cola con lista" />
                             </div>
                             <div class="card-content">
                                 <h3>Cola Simple</h3>
                                 <p>Estructura FIFO básica donde el primero en entrar es el primero en salir</p>
                                 <div class="card-features">
-                                    <span class="feature">Próximamente</span>
+                                    <span class="feature">Enqueue O(1)</span>
+                                    <span class="feature">Dequeue O(1)</span>
                                 </div>
                             </div>
                         </div>
