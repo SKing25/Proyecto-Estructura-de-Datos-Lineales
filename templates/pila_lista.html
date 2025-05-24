@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Para que se vea bien en celular también -->
 
   <!-- El título que aparecerá en la pestaña del navegador -->
-  <title>Nombre de la Estructura</title>
+  <title>Pila con Lista Enlazada</title>
 
   <!-- Enlace al archivo de estilos CSS (Probablemente no moveras esto) -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
@@ -34,61 +34,61 @@
 
     <!--  ENCABEZADO CON EL NOMBRE DE LA ESTRUCTURA -->
     <div class="page-header">
-      <h1>Nombre de la Estructura</h1> <!-- Ejemplo: Lista Enlazada Simple -->
-      <p>Aquí puedes escribir una breve descripción de cómo funciona esta estructura</p>
+      <h1>Pila con Lista Enlazada</h1>
+      <p>Estructura LIFO (Last In, First Out) donde el último elemento añadido es el primero en salir</p>
     </div>
 
-    <!--  OPERACIONES DISPONIBLES (Insertar, Buscar, Eliminar) -->
+    <!--  OPERACIONES DISPONIBLES (Push, Pop, Peek) -->
     <div class="operations">
 
-      <!--  FORMULARIO PARA INSERTAR ELEMENTOS -->
+      <!--  FORMULARIO PARA INSERTAR ELEMENTOS (PUSH) -->
       <div class="operation-card">
-        <h3>🔹 Insertar Elemento</h3>
-        <form action="/ruta/insertar" method="post">
-          <!-- Cambia la ruta para que se conecte con tu backend -->
+        <h3> Push (Apilar)</h3>
+        <form action="/pila-lista/push" method="post">
           <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>
-          <input type="submit" value="Insertar">
+          <input type="submit" value="Push">
         </form>
       </div>
 
-      <!--  PARA BUSCAR UN ELEMENTO EN LA ESTRUCTURA -->
+      <!--  PARA EXTRAER EL ELEMENTO DEL TOPE (POP) -->
       <div class="operation-card">
-        <h3> Buscar Elemento</h3>
-        <form action="/nombreEDL/buscar" method="post">
-          <input type="text" name="valor" placeholder="Valor a buscar" required>
-          <input type="submit" value="Buscar">
+        <h3> Pop (Desapilar)</h3>
+        <form action="/pila-lista/pop" method="post">
+          <input type="submit" value="Pop">
         </form>
       </div>
 
-      <!-- PARA ELIMINAR UNO O VARIOS ELEMENTOS -->
+      <!-- PARA VER EL ELEMENTO DEL TOPE SIN EXTRAERLO (PEEK) -->
       <div class="operation-card">
-        <h3> Eliminar Elemento</h3>
-        <form action="/ruta/eliminar" method="post">
-          <input type="text" name="valor" placeholder="Ej: 10, 30" required>
-          <input type="submit" value="Eliminar">
+        <h3>Peek (Ver Tope)</h3>
+        <form action="/pila-lista/peek" method="post">
+          <input type="submit" value="Peek">
         </form>
       </div>
 
     </div> <!-- Fin del bloque de operaciones -->
 
     <!--  MENSAJE QUE MUESTRA EL RESULTADO DE ALGUNA ACCIÓN -->
-    {% if mensaje %}
-    <div class="message">{{ mensaje }}</div> <!-- Esto lo llena santiago automáticamente -->
+    {% if mensaje_busqueda %}
+    <div class="message">{{ mensaje_busqueda }}</div> <!-- Esto lo llena santiago automáticamente -->
     {% endif %}
 
     <!-- CONTENEDOR DONDE SE VISUALIZARÁ LA ESTRUCTURA EN PANTALLA -->
     <div class="list-container">
       {% if datos %}
-        {{ datos|safe }} <!-- Aquí se dibuja visualmente la estructura: nodos, flechas, etc. -->
+        <div class="stack-visualization">
+          <h4>Visualización de la Pila (TOPE arriba)</h4>
+          {{ datos|safe }} <!-- Aquí se dibuja visualmente la estructura: nodos, flechas, etc. -->
+        </div>
       {% else %}
-        <div class="message">Aún no hay elementos. Inserta para comenzar.</div>
+        <div class="message">Pila vacía. Usa Push para agregar elementos.</div>
       {% endif %}
     </div>
 
     <!--  INFORMACIÓN GENERAL SOBRE LA ESTRUCTURA ACTUAL -->
     <div class="list-info">
       <p><strong> Tamaño:</strong> {{ lista.tamaño }}</p> <!-- Cuántos elementos hay -->
-      <p><strong> Tipo:</strong> Nombre de la Estructura</p> <!-- Ej: Cola Circular -->
+      <p><strong> Tipo:</strong> Pila con Lista Enlazada</p> <!-- Ej: Cola Circular -->
 
       {% if tiempos %}
         <p><strong> Tiempo:</strong> {{ tiempos }}</p> <!-- Tiempo de ejecución de operaciones -->
@@ -100,10 +100,19 @@
 
     <!--  PANEL QUE MUESTRA INFORMACIÓN ACADÉMICA Y TEÓRICA DE LA ESTRUCTURA -->
     <div class="info-panel" style="margin-top: 2rem;">
-      <h3>Sobre esta estructura</h3>
-      <p><strong>Ventajas:</strong> Escribe aquí lo que hace que esta estructura sirva pa algo</p>
-      <p><strong>Desventajas:</strong> Y LO MALO?</p>
-      <p><strong>Complejidad:</strong> Inserción O(…), Búsqueda O(…), Eliminación O(…)</p>
+      <h3>Sobre la Pila con Lista Enlazada</h3>
+      <p><strong>Ventajas:</strong> 
+        • Tamaño dinámico (no hay límite fijo como en arrays)<br>
+        • Operaciones muy eficientes en el tope<br>
+        • Ideal para recursión, evaluación de expresiones y deshacer operaciones
+      </p>
+      <p><strong>Desventajas:</strong> 
+        • Solo se puede acceder al elemento del tope<br>
+        • Uso adicional de memoria para los punteros<br>
+        • No permite acceso aleatorio a elementos
+      </p>
+      <p><strong>Complejidad:</strong> Push O(1), Pop O(1), Peek O(1)</p>
+      <p><strong>Casos de uso:</strong> Navegación de páginas web (historial), compiladores (evaluación de expresiones), algoritmos recursivos</p>
     </div>
 
   </div> <!-- Fin del contenedor principal -->

@@ -614,64 +614,84 @@ class ParticleManager {
 // ================================
 // FUNCIONALIDADES DEL CARRUSEL (INDEX)
 // ================================
-
 class CarouselManager {
     constructor() {
         this.currentSlide = 0;
-        this.cards = document.querySelectorAll('.card');
-        this.indicators = document.querySelectorAll('.indicator');
-        this.track = document.getElementById('carouselTrack');
         this.prevBtn = document.getElementById('prevBtn');
         this.nextBtn = document.getElementById('nextBtn');
         this.selectBtn = document.getElementById('selectBtn');
         this.autoSlideInterval = null;
-        
         this.init();
     }
-    
+
     init() {
-        if (!this.track || this.cards.length === 0) return;
+        this.updateCarouselElements();
+        this.setupEventListeners();
+        this.generateIndicators();
+        this.startAutoSlide();
+    }
+
+    updateCarouselElements() {
+        this.cards = document.querySelectorAll('.edl-content:not(.hidden) .card');
+        this.track = document.getElementById('carouselTrack');
+        this.indicatorsContainer = document.getElementById('indicators');
+        this.currentSlide = 0;
+    }
+
+    generateIndicators() {
+        this.indicatorsContainer.innerHTML = '';
+        this.cards.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.className = `indicator ${index === 0 ? 'active' : ''}`;
+            indicator.addEventListener('click', () => this.goToSlide(index));
+            this.indicatorsContainer.appendChild(indicator);
+        });
+    }
+
+    setupEventListeners() {
+        this.nextBtn?.removeEventListener('click', this.nextSlide);
+        this.prevBtn?.removeEventListener('click', this.prevSlide);
         
-        // Event listeners para los botones
         this.nextBtn?.addEventListener('click', () => this.nextSlide());
         this.prevBtn?.addEventListener('click', () => this.prevSlide());
         this.selectBtn?.addEventListener('click', () => this.selectCurrentStructure());
-        
-        // Event listeners para los indicadores
-        this.indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => {
-                this.currentSlide = index;
-                this.updateCarousel();
-            });
-        });
-        
-        // Iniciar auto-slide
-        this.startAutoSlide();
-        
-        // Pausar auto-slide al hacer hover
-        this.track.addEventListener('mouseenter', () => this.stopAutoSlide());
-        this.track.addEventListener('mouseleave', () => this.startAutoSlide());
+
+        if (this.track) {
+            this.track.addEventListener('mouseenter', () => this.stopAutoSlide());
+            this.track.addEventListener('mouseleave', () => this.startAutoSlide());
+        }
     }
-    
+
     updateCarousel() {
+        const activeContent = document.querySelector('.edl-content:not(.hidden)');
+        const cardWidth = 100 / this.cards.length;
+        
         this.cards.forEach((card, index) => {
             card.classList.toggle('active', index === this.currentSlide);
+            card.style.minWidth = `${cardWidth}%`;
         });
-        
-        this.indicators.forEach((indicator, index) => {
+
+        this.indicatorsContainer.querySelectorAll('.indicator').forEach((indicator, index) => {
             indicator.classList.toggle('active', index === this.currentSlide);
         });
-        
-        this.track.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+
+        if (activeContent) {
+            activeContent.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+        }
     }
-    
+
     nextSlide() {
         this.currentSlide = (this.currentSlide + 1) % this.cards.length;
         this.updateCarousel();
     }
-    
+
     prevSlide() {
         this.currentSlide = (this.currentSlide - 1 + this.cards.length) % this.cards.length;
+        this.updateCarousel();
+    }
+
+    goToSlide(index) {
+        this.currentSlide = index;
         this.updateCarousel();
     }
     
@@ -891,9 +911,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar todos los managers
     new ThemeManager();
     new ParticleManager();
-    new CarouselManager();
-    new ListOptimizer(); // Nuevo optimizador
+     window.carousel = new CarouselManager();
+    new ListOptimizer(); 
     new ListVisualEffects();
+    
     
     // Aplicar utilidades
     Utils.addHoverEffects();
@@ -982,3 +1003,89 @@ tbody tr {
 const styleSheet = document.createElement('style');
 styleSheet.textContent = rippleStyles;
 document.head.appendChild(styleSheet);
+
+
+// ================================
+
+
+  // Funcionalidad específica para el selector de EDL
+        document.addEventListener('DOMContentLoaded', function() {
+            const edlSelector = document.getElementById('edlType');
+            const headerDescription = document.getElementById('headerDescription');
+            const infoPanelTitle = document.getElementById('infoPanelTitle');
+            const infoPanelContent = document.getElementById('infoPanelContent');
+            
+            // Configuraciones para cada tipo de EDL
+            const edlConfigs = {
+                listas: {
+                    description: "Selecciona una lista enlazada para comenzar",
+                    infoTitle: "Acerca de las Listas Enlazadas",
+                    infoContent: `
+                        <p>Las listas enlazadas son estructuras de datos lineales donde los elementos se conectan mediante punteros.</p>
+                        <ul style="text-align: left; margin-top: 1rem;">
+                            <li><strong>Lista Simple:</strong> Ideal para inserción frecuente al final</li>
+                            <li><strong>Lista Doble:</strong> Mejor para navegación bidireccional</li>
+                            <li><strong>Lista Circular:</strong> Perfecta para algoritmos de Round Robin</li>
+                        </ul>
+                    `
+                },
+                pilas: {
+                    description: "Selecciona una implementación de pila para comenzar",
+                    infoTitle: "Acerca de las Pilas",
+                    infoContent: `
+                        <p>Las pilas son estructuras de datos LIFO (Last In, First Out) donde el último elemento añadido es el primero en salir.</p>
+                        <ul style="text-align: left; margin-top: 1rem;">
+                            <li><strong>Pila con Lista:</strong> Implementación dinámica usando lista enlazada</li>
+                            <li><strong>Pila con Arreglo:</strong> Implementación estática usando arreglo (próximamente)</li>
+                        </ul>
+                    `
+                },
+                colas: {
+                    description: "Selecciona una implementación de cola para comenzar",
+                    infoTitle: "Acerca de las Colas",
+                    infoContent: `
+                        <p>Las colas son estructuras de datos FIFO (First In, First Out) donde el primer elemento añadido es el primero en salir.</p>
+                        <ul style="text-align: left; margin-top: 1rem;">
+                            <li><strong>Cola Simple:</strong> Implementación básica FIFO (próximamente)</li>
+                            <li><strong>Cola Circular:</strong> Optimiza el uso de memoria (próximamente)</li>
+                            <li><strong>Cola de Prioridad:</strong> Elementos ordenados por prioridad (próximamente)</li>
+                        </ul>
+                    `
+                }
+            };
+            
+            // Función para cambiar el tipo de EDL
+            function changeEDLType(type) {
+    document.querySelectorAll('.edl-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    const selectedContent = document.getElementById(type + '-content');
+    if (selectedContent) {
+        selectedContent.classList.remove('hidden');
+    }
+    
+    // Actualizar carrusel
+    if (window.carousel) {
+        window.carousel.updateCarouselElements();
+        window.carousel.generateIndicators();
+        window.carousel.updateCarousel();
+    }
+    
+    // Actualizar contenido informativo
+    const config = edlConfigs[type];
+    if (config) {
+        headerDescription.textContent = config.description;
+        infoPanelTitle.textContent = config.infoTitle;
+        infoPanelContent.innerHTML = config.infoContent;
+    }
+}
+            
+            // Event listener para el selector
+            edlSelector.addEventListener('change', function() {
+                changeEDLType(this.value);
+            });
+            
+            // Inicializar con listas por defecto
+            changeEDLType('listas');
+        });

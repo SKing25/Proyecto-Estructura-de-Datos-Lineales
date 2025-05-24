@@ -13,6 +13,18 @@
         <span class="theme-icon moon-icon">🌒</span>
     </div>
 
+    <!-- Selector de Tipo de EDL -->
+    <div class="edl-selector" id="edlSelector">
+        <div class="selector-container">
+            <label for="edlType">Tipo de EDL:</label>
+            <select id="edlType" class="edl-dropdown">
+                <option value="listas">📋 Listas Enlazadas</option>
+                <option value="pilas">📚 Pilas</option>
+                <option value="colas">🚶 Colas</option>
+            </select>
+        </div>
+    </div>
+
     <!-- Partículas de fondo animadas -->
     <div class="background-particles">
         <div class="particle"></div>
@@ -26,66 +38,130 @@
     <div class="main-container">
         <header class="header">
             <h1>Estructuras de Datos</h1>
-            <p>Selecciona una estructura para comenzar</p>
+            <p id="headerDescription">Selecciona una estructura para comenzar</p>
         </header>
 
         <div class="carousel-container">
             <div class="carousel">
                 <div class="carousel-track" id="carouselTrack">
-                    <div class="card active" data-url="/lista-simple">
-                        <div class="card-image">
-                            <img src="{{ url_for('static', filename='images/lista-simple.jpg') }}" alt="Lista Enlazada Simple" />
+                    
+                    <!-- CONTENIDO PARA LISTAS ENLAZADAS -->
+                    <div class="edl-content" id="listas-content">
+                        <div class="card active" data-url="/lista-simple">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/lista-simple.jpg') }}" alt="Lista Enlazada Simple" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Lista Enlazada Simple</h3>
+                                <p>Estructura lineal donde cada elemento apunta al siguiente</p>
+                                <div class="card-features">
+                                    <span class="feature">Inserción O(1)</span>
+                                    <span class="feature">Búsqueda O(n)</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <h3>Lista Enlazada Simple</h3>
-                            <p>Estructura lineal donde cada elemento apunta al siguiente</p>
-                            <div class="card-features">
-                                <span class="feature">Inserción O(1)</span>
-                                <span class="feature">Búsqueda O(n)</span>
+
+                        <div class="card" data-url="/lista-doble">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/lista-doble.jpg') }}" alt="Lista Enlazada Doble" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Lista Enlazada Doble</h3>
+                                <p>Cada elemento tiene punteros al anterior y siguiente</p>
+                                <div class="card-features">
+                                    <span class="feature">Navegación bidireccional</span>
+                                    <span class="feature">Eliminación eficiente</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" data-url="/lista-circular">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/lista-circular.jpg') }}" alt="Lista Enlazada Circular" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Lista Enlazada Circular</h3>
+                                <p>El último elemento apunta al primero, formando un círculo</p>
+                                <div class="card-features">
+                                    <span class="feature">Recorrido infinito</span>
+                                    <span class="feature">Round Robin</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card" data-url="/lista-doble">
-                        <div class="card-image">
-                            <img src="{{ url_for('static', filename='images/lista-doble.jpg') }}" alt="Lista Enlazada Doble" />
+                    <!-- CONTENIDO PARA PILAS -->
+                    <div class="edl-content hidden" id="pilas-content">
+                        <div class="card active" data-url="/pila-lista">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/pila-lista.jpg') }}" alt="Pila con Lista" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Pila con Lista Enlazada</h3>
+                                <p>Estructura LIFO implementada con lista enlazada</p>
+                                <div class="card-features">
+                                    <span class="feature">Push O(1)</span>
+                                    <span class="feature">Pop O(1)</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <h3>Lista Enlazada Doble</h3>
-                            <p>Cada elemento tiene punteros al anterior y siguiente</p>
-                            <div class="card-features">
-                                <span class="feature">Navegación bidireccional</span>
-                                <span class="feature">Eliminación eficiente</span>
+
+                        <div class="card coming-soon">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Pila con Arreglo</h3>
+                                <p>Estructura LIFO implementada con arreglo estático</p>
+                                <div class="card-features">
+                                    <span class="feature">Próximamente</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card" data-url="/lista-circular">
-                        <div class="card-image">
-                            <img src="{{ url_for('static', filename='images/lista-circular.jpg') }}" alt="Lista Enlazada Circular" />
+                    <!-- CONTENIDO PARA COLAS -->
+                    <div class="edl-content hidden" id="colas-content">
+                        <div class="card coming-soon active">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Cola Simple</h3>
+                                <p>Estructura FIFO básica donde el primero en entrar es el primero en salir</p>
+                                <div class="card-features">
+                                    <span class="feature">Próximamente</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <h3>Lista Enlazada Circular</h3>
-                            <p>El último elemento apunta al primero, formando un círculo</p>
-                            <div class="card-features">
-                                <span class="feature">Recorrido infinito</span>
-                                <span class="feature">Round Robin</span>
+
+                        <div class="card coming-soon">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Cola Circular</h3>
+                                <p>Cola que utiliza el espacio de manera circular para optimizar memoria</p>
+                                <div class="card-features">
+                                    <span class="feature">Próximamente</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card coming-soon">
+                            <div class="card-image">
+                                <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
+                            </div>
+                            <div class="card-content">
+                                <h3>Cola de Prioridad</h3>
+                                <p>Cola donde los elementos se ordenan según su prioridad</p>
+                                <div class="card-features">
+                                    <span class="feature">Próximamente</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card coming-soon">
-                        <div class="card-image">
-                            <img src="{{ url_for('static', filename='images/Proximamente.png') }}" alt="Próximamente" />
-                        </div>
-                        <div class="card-content">
-                            <h3>Más Estructuras</h3>
-                            <p>Próximamente más estructuras de datos, cuando Santiago o Mariana decidan chambear.</p>
-                            <div class="card-features">
-                                <span class="feature">Cuando Santiago chambee</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -95,10 +171,7 @@
             </div>
 
             <div class="carousel-indicators" id="indicators">
-                <span class="indicator active" data-slide="0"></span>
-                <span class="indicator" data-slide="1"></span>
-                <span class="indicator" data-slide="2"></span>
-                <span class="indicator" data-slide="3"></span>
+                <!-- Los indicadores se actualizarán dinámicamente -->
             </div>
         </div>
 
@@ -108,15 +181,17 @@
         </div>
 
         <div class="info-panel" id="infoPanel">
-            <h3>Acerca de las Estructuras de Datos</h3>
-            <p>Las estructuras de datos son formas de organizar y almacenar información de manera eficiente. Cada estructura tiene sus propias ventajas y casos de uso específicos.</p>
-            <ul style="text-align: left; margin-top: 1rem;">
-                <li><strong>Lista Simple:</strong> Ideal para inserción frecuente al final</li>
-                <li><strong>Lista Doble:</strong> Mejor para navegación bidireccional</li>
-                <li><strong>Lista Circular:</strong> Perfecta para algoritmos de Round Robin</li>
-            </ul>
+            <h3 id="infoPanelTitle">Acerca de las Listas Enlazadas</h3>
+            <div id="infoPanelContent">
+                <p>Las listas enlazadas son estructuras de datos lineales donde los elementos se conectan mediante punteros.</p>
+                <ul style="text-align: left; margin-top: 1rem;">
+                    <li><strong>Lista Simple:</strong> Ideal para inserción frecuente al final</li>
+                    <li><strong>Lista Doble:</strong> Mejor para navegación bidireccional</li>
+                    <li><strong>Lista Circular:</strong> Perfecta para algoritmos de Round Robin</li>
+                </ul>
+            </div>
         </div>
     </div>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
