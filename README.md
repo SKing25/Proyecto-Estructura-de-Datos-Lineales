@@ -19,7 +19,8 @@ Utiliza el microframework Flask para la creación de la interfaz web, permitiend
 
 ```
 ├── app.py               # Archivo principal que inicia la aplicación Flask, backend.
-├── static/              # Archivos estáticos (CSS, imágenes, etc.)
+├── static/ ────────     # Archivos estáticos (JavaScript/CSS)
+              images├──  # imágenes
 ├── templates/           # Plantillas HTML para las vistas
 └── README.md            # Documentación del proyecto
 ```
@@ -60,6 +61,7 @@ Utiliza el microframework Flask para la creación de la interfaz web, permitiend
 5. **Acceder a la aplicación**:
 
    Abre tu navegador y visita `http://127.0.0.1:5000/` para interactuar con la aplicación.
+   Si es en telefono visita el segundo link que genere la aplicación, normalmente: `http://127.0.0.1:5000/` para interactuar desde telefono.
 
 ## Uso
 
