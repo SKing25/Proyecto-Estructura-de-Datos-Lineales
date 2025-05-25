@@ -645,19 +645,13 @@ class ColaSimple:
         self.tamaño -= 1
         return self.items.pop(0)
 
-    @benchmark
-    def buscar(self, dato):
-        try:
-            return self.items.index(dato)
-        except ValueError:
-            return -1
-
     def esta_vacia(self):
         return self.tamaño == 0
 
     def obtener_cola(self):
         return self.items
 
+    @benchmark
     def peek(self):
         return self.items[0] if not self.esta_vacia() else None
 
@@ -672,7 +666,7 @@ def mostrar_cola_simple():
                          lista=cola_simple) # Pasa la lista como contexto a la plantilla
 
 @app.route('/cola-simple/encolar', methods=['POST']) # Define la ruta para insertar un elemento en la cola simple
-def encolar():
+def encolar_cola_simple():
     valor = request.form['valor'] # Obtiene el valor a insertar del formulario
     tiempos = [] # Inicializa una lista para almacenar los tiempos
     memorias = [] # Inicializa una lista para almacenar las memorias
@@ -685,42 +679,37 @@ def encolar():
 
     datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
     df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
-    peek = f'Primer elemento en la cola: {cola_simple.peek()}' if not cola_simple.esta_vacia() else 'Cola vacía' # Mensaje de vista
     return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
                          datos=df.to_html(index=False), # Convierte el DataFrame a HTML
                          lista=cola_simple, # Pasa la lista como contexto a la plantilla
-                         mensaje_busqueda=peek, # Mensaje de vista
                          tiempos=f"{tiempo_total:.7f} s", # Tiempo total de ejecución
                          memorias=f"{memoria_total:.6f} MB") # Memoria total utilizada
 
 @app.route('/cola-simple/desencolar', methods=['POST']) # Define la ruta para eliminar un elemento de la cola simple
-def desencolar():
+def desencolar_cola_simple():
     dato, tiempo, memoria = cola_simple.desencolar() # Llama a la función desencolar y obtiene el dato, tiempo y memoria
     mensaje = f'Elemento desencolado: {dato}' if dato else 'Cola vacía' # Mensaje de extracción
-    peek = f'Primer elemento en la cola: {cola_simple.peek()}' if not cola_simple.esta_vacia() else 'Cola vacía' # Mensaje de vista
-    mensaje_completo = f'{mensaje} | {peek}' # Mensaje completo
 
     datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
     df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
     return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
                          datos=df.to_html(index=False), # Convierte el DataFrame a HTML
                          lista=cola_simple, # Pasa la lista como contexto a la plantilla
-                         mensaje_busqueda=mensaje_completo, # Mensaje de extracción
+                         mensaje_busqueda=mensaje, # Mensaje de extracción
                          tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
                          memorias=f"{memoria:.6f} MB") # Memoria utilizada
-@app.route('/cola-simple/buscar', methods=['POST']) # Define la ruta para buscar un elemento en la cola simple
-def buscar_cola():
-    valor = request.form['valor'] # Obtiene el valor a buscar del formulario
-    posicion, tiempo, memoria = cola_simple.buscar(valor) # Llama a la función buscar y obtiene la posición, tiempo y memoria
+
+@app.route('/cola-simple/peek', methods=['POST']) # Define la ruta para ver el elemento en la parte superior de la cola simple
+def peek_cola_simple():
+    dato, tiempo, memoria = cola_simple.peek() # Llama a la función peek y obtiene el dato, tiempo y memoria
+    mensaje = f'Primer elemento en la cola: {dato}' if dato else 'Cola vacía' # Mensaje de vista
+
     datos = cola_simple.obtener_cola() # Obtiene los datos de la cola
     df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor']) # Crea un DataFrame de pandas con los datos
-    mensaje = f'Elemento {"encontrado en posición " + str(posicion) if posicion >= 0 else "no encontrado"}' # Mensaje de búsqueda
-    peek = f'Primer elemento en la cola: {cola_simple.peek()}' if not cola_simple.esta_vacia() else 'Cola vacía' # Mensaje de vista
-    mensaje_completo = f'{mensaje} | {peek}' # Mensaje completo
     return render_template('cola_simple.html', # Renderiza la plantilla cola_simple.html
                          datos=df.to_html(index=False), # Convierte el DataFrame a HTML
                          lista=cola_simple, # Pasa la lista como contexto a la plantilla
-                         mensaje_busqueda=mensaje_completo, # Mensaje de búsqueda
+                         mensaje_busqueda=mensaje, # Mensaje de vista
                          tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
                          memorias=f"{memoria:.6f} MB") # Memoria utilizada
 
