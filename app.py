@@ -11,8 +11,7 @@ app = Flask(__name__) # Inicializa la aplicación Flask
 def index():
     return render_template('index.html') # Renderiza la plantilla index.html
 
-if __name__ == '__main__': # Si este archivo se ejecuta directamente
-    app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
+
 
 def benchmark(func):
     @wraps(func) # Decorador para mantener la firma original de la función
@@ -724,3 +723,6 @@ def buscar_cola():
                          mensaje_busqueda=mensaje_completo, # Mensaje de búsqueda
                          tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
                          memorias=f"{memoria:.6f} MB") # Memoria utilizada
+
+if __name__ == '__main__': # Si este archivo se ejecuta directamente
+    app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
