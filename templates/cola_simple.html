@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pila con Arreglo</title>
+  <title>Cola Simple</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -22,30 +22,31 @@
 
   <div class="container">
     <div class="page-header">
-      <h1>Pila con Arreglo</h1>
-      <p>Una estructura LIFO implementada usando listas dinámicas de Python.</p>
+      <h1>Cola Simple</h1>
+      <p>Estructura FIFO donde el primero en entrar es el primero en salir.</p>
     </div>
 
     <div class="operations">
       <div class="operation-card">
-        <h3>🔹 Push (Insertar)</h3>
-        <form action="/pila-arreglo/push" method="post">
+        <h3> Encolar</h3>
+        <form action="/cola-simple/encolar" method="post">
           <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>
-          <input type="submit" value="Push">
+          <input type="submit" value="Encolar">
         </form>
       </div>
 
       <div class="operation-card">
-        <h3> Peek (Ver Tope)</h3>
-        <form action="/pila-arreglo/peek" method="post">
-          <input type="submit" value="Ver Tope">
+        <h3>🔍 Buscar</h3>
+        <form action="/cola-simple/buscar" method="post">
+          <input type="text" name="valor" placeholder="Valor a buscar" required>
+          <input type="submit" value="Buscar">
         </form>
       </div>
 
       <div class="operation-card">
-        <h3> Pop (Extraer)</h3>
-        <form action="/pila-arreglo/pop" method="post">
-          <input type="submit" value="Pop">
+        <h3> Desencolar</h3>
+        <form action="/cola-simple/desencolar" method="post">
+          <input type="submit" value="Desencolar">
         </form>
       </div>
     </div>
@@ -64,7 +65,7 @@
 
     <div class="list-info">
       <p><strong>Tamaño:</strong> {{ lista.tamaño }}</p>
-      <p><strong>Tipo:</strong> Pila con Arreglo</p>
+      <p><strong>Tipo:</strong> Cola Simple</p>
       {% if tiempos %}
         <p><strong>Tiempo:</strong> {{ tiempos }}</p>
       {% endif %}
@@ -75,9 +76,9 @@
 
     <div class="info-panel" style="margin-top: 2rem;">
       <h3>Sobre esta estructura</h3>
-      <p><strong>Ventajas:</strong> Acceso rápido al tope, implementación sencilla en Python.</p>
-      <p><strong>Desventajas:</strong> El rendimiento puede verse afectado si se realizan muchas redimensiones.</p>
-      <p><strong>Complejidad:</strong> Push O(1)*, Pop O(1), Peek O(1) (*amortizado).</p>
+      <p><strong>Ventajas:</strong> Sencilla de implementar y muy útil en procesos por turnos o flujos de datos.</p>
+      <p><strong>Desventajas:</strong> Operación de desencolar es costosa (O(n)) al usar `pop(0)` en listas.</p>
+      <p><strong>Complejidad:</strong> Encolar O(1), Desencolar O(n), Buscar O(n)</p>
     </div>
   </div>
 
