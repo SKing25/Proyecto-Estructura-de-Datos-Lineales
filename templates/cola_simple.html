@@ -36,10 +36,9 @@
       </div>
 
       <div class="operation-card">
-        <h3>🔍 Buscar</h3>
-        <form action="/cola-simple/buscar" method="post">
-          <input type="text" name="valor" placeholder="Valor a buscar" required>
-          <input type="submit" value="Buscar">
+        <h3> Peek</h3>
+        <form action="/cola-simple/peek" method="post">
+          <input type="submit" value="Peek">
         </form>
       </div>
 
@@ -78,7 +77,7 @@
       <h3>Sobre esta estructura</h3>
       <p><strong>Ventajas:</strong> Sencilla de implementar y muy útil en procesos por turnos o flujos de datos.</p>
       <p><strong>Desventajas:</strong> Operación de desencolar es costosa (O(n)) al usar `pop(0)` en listas.</p>
-      <p><strong>Complejidad:</strong> Encolar O(1), Desencolar O(n), Buscar O(n)</p>
+      <p><strong>Complejidad:</strong> Encolar O(1), Desencolar O(n), Peek O(1)</p>
     </div>
   </div>
 
