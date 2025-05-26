@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cola de Prioridad</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="theme-toggle light" id="themeToggle">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </div>
+
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <a href="/" class="back-btn">← Volver al Menú</a>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Cola de Prioridad</h1>
+            <p>Estructura que organiza elementos según su prioridad (menor número = mayor prioridad).</p>
+        </div>
+
+        <div class="operations">
+            <div class="operation-card">
+                <h3>Encolar</h3>
+                <form action="/cola-prioridad/encolar" method="post">
+                    <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>
+                    <input type="number" name="prioridad" placeholder="Prioridad (1-5)" min="1" max="5" required>
+                    <input type="submit" value="Encolar">
+                </form>
+            </div>
+
+            <div class="operation-card">
+                <h3>Peek</h3>
+                <form action="/cola-prioridad/peek" method="post">
+                    <input type="submit" value="Peek">
+                </form>
+            </div>
+
+            <div class="operation-card">
+                <h3>Desencolar</h3>
+                <form action="/cola-prioridad/desencolar" method="post">
+                    <input type="submit" value="Desencolar">
+                </form>
+            </div>
+        </div>
+
+        {% if mensaje_busqueda %}
+            <div class="message">{{ mensaje_busqueda }}</div>
+        {% endif %}
+
+        <div class="list-container">
+            {% if datos %}
+                {{ datos|safe }}
+            {% else %}
+                <div class="message">Aún no hay elementos. Inserta para comenzar.</div>
+            {% endif %}
+        </div>
+
+        <div class="list-info">
+            <p><strong>Tamaño:</strong> {{ lista.tamaño }}</p>
+            <p><strong>Tipo:</strong> Cola de Prioridad</p>
+            {% if tiempos %}
+                <p><strong>Tiempo:</strong> {{ tiempos }}</p>
+            {% endif %}
+            {% if memorias %}
+                <p><strong>Memoria:</strong> {{ memorias }}</p>
+            {% endif %}
+        </div>
+
+        <div class="info-panel" style="margin-top: 2rem;">
+            <h3>Sobre esta estructura</h3>
+            <p><strong>Ventajas:</strong> Ideal para sistemas que requieren procesamiento por prioridad.</p>
+            <p><strong>Desventajas:</strong> Mayor complejidad que una cola simple.</p>
+            <p><strong>Complejidad:</strong> Encolar O(log n), Desencolar O(log n), Peek O(1)</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@ import pandas as pd
 import time
 from memory_profiler import memory_usage
 from functools import wraps
+import heapq
 
 app = Flask(__name__) # Inicializa la aplicación Flask
 
@@ -10,8 +11,6 @@ app = Flask(__name__) # Inicializa la aplicación Flask
 @app.route('/') # Define la ruta para la página principal
 def index():
     return render_template('index.html') # Renderiza la plantilla index.html
-
-
 
 def benchmark(func):
     @wraps(func) # Decorador para mantener la firma original de la función
@@ -712,6 +711,105 @@ def peek_cola_simple():
                          mensaje_busqueda=mensaje, # Mensaje de vista
                          tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
                          memorias=f"{memoria:.6f} MB") # Memoria utilizada
+
+#-------------------------------Cola de Prioridad-------------------------------------
+
+class ColaPrioridad:
+    def __init__(self):
+        self.heap = []
+        self.tamaño = 0
+
+    @benchmark
+    def encolar(self, valor, prioridad):
+        heapq.heappush(self.heap, (prioridad, valor))
+        self.tamaño += 1
+
+    @benchmark
+    def desencolar(self):
+        if self.esta_vacia():
+            return None
+        self.tamaño -= 1
+        return heapq.heappop(self.heap)[1]  # Retorna solo el valor
+
+    @benchmark
+    def peek(self):
+        if self.esta_vacia():
+            return None
+        return self.heap[0][1]  # Retorna solo el valor
+
+    def esta_vacia(self):
+        return self.tamaño == 0
+
+    def obtener_cola(self):
+        # Retorna una lista de tuplas (prioridad, valor)
+        return self.heap
+
+cola_prioridad = ColaPrioridad()  # Instancia global
+
+@app.route('/cola-prioridad') # Define la ruta para la cola de prioridad
+def mostrar_cola_prioridad():
+    datos = cola_prioridad.obtener_cola() # Obtiene los datos de la cola de prioridad
+    # Creamos DataFrame con dos columnas
+    df = pd.DataFrame(datos, columns=['Prioridad', 'Valor']) if datos else pd.DataFrame(columns=['Prioridad', 'Valor'])
+    return render_template('cola_prioridad.html', # Renderiza la plantilla cola_prioridad.html
+                         datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                         lista=cola_prioridad) # Pasa la lista como contexto a la plantilla
+
+@app.route('/cola-prioridad/encolar', methods=['POST']) # Define la ruta para insertar un elemento en la cola de prioridad
+def encolar_cola_prioridad():
+    valores = request.form['valor'].split(',') # Obtiene los valores a insertar del formulario
+    prioridad = int(request.form['prioridad']) # Obtiene la prioridad del formulario
+    tiempos = [] # Inicializa una lista para almacenar los tiempos
+    memorias = [] # Inicializa una lista para almacenar las memorias
+
+    for valor in valores: # Recorre los valores separados por comas
+        valor = valor.strip() # Elimina espacios en blanco alrededor del valor
+        if valor: # Verifica que el valor no esté vacío
+            _, tiempo, memoria = cola_prioridad.encolar(valor, prioridad) # Llama a la función encolar y obtiene el tiempo y memoria
+            tiempos.append(tiempo) # Agrega el tiempo a la lista de tiempos
+            memorias.append(memoria) # Agrega la memoria a la lista de memorias
+
+    tiempo = sum(tiempos) # Suma todos los tiempos
+    memoria = sum(memorias) # Suma todas las memorias
+
+    datos = cola_prioridad.obtener_cola() # Obtiene los datos de la cola de prioridad
+    # Creamos DataFrame con dos columnas
+    df = pd.DataFrame(datos, columns=['Prioridad', 'Valor']) if datos else pd.DataFrame(columns=['Prioridad', 'Valor'])
+    return render_template('cola_prioridad.html', # Renderiza la plantilla cola_prioridad.html
+                           datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                           lista=cola_prioridad, # Pasa la lista como contexto a la plantilla
+                           tiempos=f"{tiempo:.7f} s", # Tiempo total de ejecución
+                           memorias=f"{memoria:.6f} MB") # Memoria total utilizada
+
+@app.route('/cola-prioridad/desencolar', methods=['POST']) # Define la ruta para eliminar un elemento de la cola de prioridad
+def desencolar_cola_prioridad():
+    dato, tiempo, memoria = cola_prioridad.desencolar() # Llama a la función desencolar y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento desencolado: {dato}' if dato else 'Cola vacía' # Mensaje de extracción
+
+    datos = cola_prioridad.obtener_cola() # Obtiene los datos de la cola de prioridad
+    # Creamos DataFrame con dos columnas
+    df = pd.DataFrame(datos, columns=['Prioridad', 'Valor']) if datos else pd.DataFrame(columns=['Prioridad', 'Valor'])
+    return render_template('cola_prioridad.html', # Renderiza la plantilla cola_prioridad.html
+                           datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                           lista=cola_prioridad, # Pasa la lista como contexto a la plantilla
+                           mensaje_busqueda=mensaje, # Mensaje de extracción
+                           tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+                           memorias=f"{memoria:.6f} MB") # Memoria utilizada
+
+@app.route('/cola-prioridad/peek', methods=['POST']) # Define la ruta para ver el elemento con mayor prioridad en la cola de prioridad
+def peek_cola_prioridad():
+    dato, tiempo, memoria = cola_prioridad.peek() # Llama a la función peek y obtiene el dato, tiempo y memoria
+    mensaje = f'Elemento con mayor prioridad: {dato}' if dato else 'Cola vacía' # Mensaje de vista
+
+    datos = cola_prioridad.obtener_cola() # Obtiene los datos de la cola de prioridad
+    # Creamos DataFrame con dos columnas
+    df = pd.DataFrame(datos, columns=['Prioridad', 'Valor']) if datos else pd.DataFrame(columns=['Prioridad', 'Valor'])
+    return render_template('cola_prioridad.html', # Renderiza la plantilla cola_prioridad.html
+                           datos=df.to_html(index=False), # Convierte el DataFrame a HTML
+                           lista=cola_prioridad, # Pasa la lista como contexto a la plantilla
+                           mensaje_busqueda=mensaje, # Mensaje de vista
+                           tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
+                           memorias=f"{memoria:.6f} MB") # Memoria utilizada
 
 if __name__ == '__main__': # Si este archivo se ejecuta directamente
     app.run(debug=True, host='0.0.0.0') # Inicia la aplicación Flask en modo de depuración
