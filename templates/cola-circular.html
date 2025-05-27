@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cola Circular</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="theme-toggle light" id="themeToggle">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </div>
+
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <a href="/" class="back-btn">← Volver al Menú</a>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Cola Circular</h1>
+            <p>Estructura que utiliza el espacio de manera circular para optimizar memoria.</p>
+        </div>
+
+        {% if not lista %}
+        <div class="operation-card">
+            <h3>Configurar Cola</h3>
+            <form action="/cola-circular/configurar" method="post">
+                <div class="input-container">
+                    <input type="number" name="capacidad" placeholder="Capacidad de la cola" min="1" required>
+                    <div class="form-hint">Número máximo de elementos</div>
+                </div>
+                <button type="submit" class="btn-submit">Configurar</button>
+            </form>
+        </div>
+        {% else %}
+
+        <div class="info-card">
+            <div class="info-item">
+                <span class="info-label">Capacidad total:</span>
+                <span class="info-value">{{ capacidad_total }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Espacios disponibles:</span>
+                <span class="info-value">{{ espacios_disponibles }}</span>
+            </div>
+        </div>
+
+        <div class="operations-container">
+            <div class="operation-card">
+                <h3>Encolar</h3>
+                <form action="/cola-circular/encolar" method="post">
+                    <div class="input-container">
+                        <input type="text" name="valor" placeholder="Valor(es)" required>
+                        <div class="form-hint">Separa múltiples valores con comas</div>
+                    </div>
+                    <button type="submit" class="btn-submit">Encolar</button>
+                </form>
+            </div>
+
+            <div class="operation-buttons">
+                <form action="/cola-circular/desencolar" method="post" class="operation-form">
+                    <button type="submit" class="btn-action">Desencolar</button>
+                </form>
+                <form action="/cola-circular/peek" method="post" class="operation-form">
+                    <button type="submit" class="btn-action">Ver Primero</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="data-visualization">
+            <h3>Elementos en la Cola</h3>
+            {% if datos %}
+            <div class="table-container">
+                {{ datos | safe }}
+            </div>
+            {% else %}
+            <p class="empty-message">Cola vacía</p>
+            {% endif %}
+        </div>
+
+        {% if mensaje_busqueda or tiempos %}
+        <div class="results-container">
+            {% if mensaje_busqueda %}
+            <div class="message">
+                <p>{{ mensaje_busqueda }}</p>
+            </div>
+            {% endif %}
+            {% if tiempos %}
+            <div class="metrics">
+                <div class="metric-item">
+                    <span class="metric-label">Tiempo:</span>
+                    <span class="metric-value">{{ tiempos }}</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Memoria:</span>
+                    <span class="metric-value">{{ memorias }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="circle-visualization">
+            <div class="circle">
+                {% for i in range(capacidad_total) %}
+                <div class="circle-item {% if i < capacidad_total - espacios_disponibles %}filled{% else %}empty{% endif %}"></div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
