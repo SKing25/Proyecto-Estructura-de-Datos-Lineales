@@ -14,16 +14,26 @@
     </div>
 
     <!-- Selector de Tipo de EDL -->
-    <div class="edl-selector" id="edlSelector">
-        <div class="selector-container">
-            <label for="edlType">Tipo de EDL:</label>
-            <select id="edlType" class="edl-dropdown">
-                <option value="listas">📋 Listas Enlazadas</option>
-                <option value="pilas">📚 Pilas</option>
-                <option value="colas">🚶 Colas</option>
-            </select>
-        </div>
-    </div>
+   <div class="edl-selector">
+  <!-- Interfaz visual personalizada -->
+  <div class="edl-visual-menu">
+    <div class="edl-visual-item" data-value="listas">📋<span>Listas</span></div>
+    <div class="edl-visual-item" data-value="pilas">📚<span>Pilas</span></div>
+    <div class="edl-visual-item" data-value="colas">🚶<span>Colas</span></div>
+  </div>
+
+  <!-- Select real (oculto) -->
+  <div class="selector-container" style="display: none;">
+    <label for="edlType">Tipo de EDL:</label>
+    <select id="edlType" class="edl-dropdown">
+      <option value="listas">📋 Listas Enlazadas</option>
+      <option value="pilas">📚 Pilas</option>
+      <option value="colas">🚶 Colas</option>
+    </select>
+  </div>
+</div>
+
+
 
     <!-- Partículas de fondo animadas -->
     <div class="background-particles">

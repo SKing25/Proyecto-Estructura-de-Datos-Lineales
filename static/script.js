@@ -1090,38 +1090,22 @@ document.head.appendChild(styleSheet);
             changeEDLType('listas');
         });
 
-        document.addEventListener("DOMContentLoaded", () => {
-    const input = document.querySelector("#prioridad");
-    const btnUp = document.querySelector(".btn-up");
-    const btnDown = document.querySelector(".btn-down");
+        const visualItems = document.querySelectorAll('.edl-visual-item');
+const realSelect = document.getElementById('edlType');
 
-    const updateButtons = () => {
-        const value = parseInt(input.value);
-        const min = parseInt(input.min);
-        const max = parseInt(input.max);
+visualItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const value = item.getAttribute('data-value');
 
-        btnDown.disabled = value <= min;
-        btnUp.disabled = value >= max;
-    };
+    // Setear el valor del select oculto
+    realSelect.value = value;
 
-    btnUp.addEventListener("click", () => {
-        const value = parseInt(input.value);
-        const max = parseInt(input.max);
-        if (value < max) {
-            input.value = value + 1;
-            updateButtons();
-        }
-    });
+    // Disparar manualmente el evento "change" para activar el carrusel
+    const event = new Event('change', { bubbles: true });
+    realSelect.dispatchEvent(event);
 
-    btnDown.addEventListener("click", () => {
-        const value = parseInt(input.value);
-        const min = parseInt(input.min);
-        if (value > min) {
-            input.value = value - 1;
-            updateButtons();
-        }
-    });
-
-    updateButtons(); // Inicia con botones correctos
+    // Marcar visualmente el ítem activo
+    visualItems.forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
 });
-// =================

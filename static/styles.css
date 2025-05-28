@@ -1202,7 +1202,7 @@ input[name="prioridad"][type=number]::-webkit-outer-spin-button {
 
 .custom-spinner button:hover {
     background: var(--accent-color);
-    color: var(--text-color);
+    color: var(--card-bg);
     transform: scale(1.15);
 }
 
@@ -1516,125 +1516,167 @@ table tr:hover {
 
 
   /* Estilos para el selector de EDL */
-        .edl-selector {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        [data-theme="dark"] .edl-selector {
-            background: rgba(30, 30, 30, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .selector-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .selector-container label {
-            font-weight: 600;
-            color: #333;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        
-        [data-theme="dark"] .selector-container label {
-            color: #fff;
-        }
-        
-        .edl-dropdown {
-            padding: 8px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
-            color: #333;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 180px;
-        }
-        
-        .edl-dropdown:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-        }
-        
-        .edl-dropdown:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        [data-theme="dark"] .edl-dropdown {
-            background: #2a2a2a;
-            color: #fff;
-            border-color: #444;
-        }
-        
-        [data-theme="dark"] .edl-dropdown:hover {
-            border-color: #667eea;
-        }
-        
-        /* Estilos para ocultar contenido */
-        .edl-content.hidden {
-            display: none;
-        }
-        
-        .edl-content {
-            display: flex;
-            width: 100%;
-        }
-        
-        /* Ajustar el carrusel para el nuevo contenido */
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s ease;
-        }
-        
-        /* Responsive para móviles */
-        @media (max-width: 768px) {
-            .edl-selector {
-                position: relative;
-                top: auto;
-                left: auto;
-                margin: 20px auto;
-                max-width: 300px;
-            }
-            
-            .selector-container {
-                flex-direction: column;
-                gap: 8px;
-                text-align: center;
-            }
-            
-            .edl-dropdown {
-                min-width: 200px;
-            }
-        }
-        
-        /* Animaciones de entrada */
-        .edl-selector {
-            animation: slideInLeft 0.6s ease-out;
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
+    
+.edl-visual-menu {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 0.5rem 1rem; 
+    border-radius: 1.5rem;
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 20px;
+    left: 60px;
+    z-index: 1000;
+    overflow: visible; /* Asegurar que el contenido escalado sea visible */
+    transition: all 0.5s ease; /* Transición suave entre colores de tema */
+}
+
+.edl-visual-item {
+    cursor: pointer;
+    color: #aaa;
+    font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: 0.3s ease;
+    position: relative; /* Para que el z-index funcione */
+    padding: 0.5rem; 
+    min-width: 60px; 
+}
+
+.edl-visual-item span {
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+.edl-visual-item:hover,
+.edl-visual-item.active {
+    color: #00ffff;
+    transform: scale(1.5); 
+    z-index: 10; /* Asegurar que esté por encima */
+}
+
+.edl-visual-item.active span {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.edl-visual-menu-container {
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+.selector-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.selector-container label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .selector-container label {
+    color: #fff;
+}
+
+.edl-dropdown {
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 180px;
+}
+
+.edl-dropdown:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.edl-dropdown:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="dark"] .edl-dropdown {
+    background: #2a2a2a;
+    color: #fff;
+    border-color: #444;
+}
+
+[data-theme="dark"] .edl-dropdown:hover {
+    border-color: #667eea;
+}
+
+/* Estilos para ocultar contenido */
+.edl-content.hidden {
+    display: none;
+}
+
+.edl-content {
+    display: flex;
+    width: 100%;
+}
+
+/* Ajustar el carrusel para el nuevo contenido */
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .edl-selector {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin: 20px auto;
+        max-width: 300px;
+    }
+    
+    .selector-container {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .edl-dropdown {
+        min-width: 200px;
+    }
+    
+    .edl-visual-menu {
+        padding: 1rem 2rem; /* Reducir padding en móvil */
+    }
+}
+
+/* Animaciones de entrada */
+.edl-selector {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
