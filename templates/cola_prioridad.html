@@ -6,7 +6,6 @@
     <title>Cola de Prioridad</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles_Tema.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles_EDL.css') }}">
-    
 </head>
 <body>
     <div class="theme-toggle light" id="themeToggle">
@@ -34,7 +33,7 @@
                 <form action="/cola-prioridad/encolar" method="post">
                     <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>  
                     <div class="priority-wrapper">
-                    <input type="number" name="prioridad" placeholder="Valores entre 1 y 5" id="prioridad" min="1" max="5" value="1" required>
+                    <input type="number" name="prioridad" id="prioridad" min="1" max="5" value="1" required>
                    
         </div>
 
