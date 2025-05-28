@@ -1138,10 +1138,10 @@ input[name="prioridad"]:invalid:not(:placeholder-shown) {
     font-weight: 600;
     box-shadow: var(--shadow-medium), 0 0 15px rgba(239, 68, 68, 0.2); /** Resplandor rojo */
     text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
-    animation: shake 0.5s ease-in-out; /** Efecto de vibración (sacudida) */
+    animation: shake 0.5s ease-in-out; /** Efecto de vibración (Sacudida) */
 }
 
-/** Remueve las flechas del input tipo number en navegadores WebKit */
+/** Remueve las flechas del input tipo number en navegadores WebKit, Porque se ven feas */
 input[name="prioridad"]::-webkit-outer-spin-button,
 input[name="prioridad"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -1172,12 +1172,7 @@ input[name="prioridad"]:focus {
     animation: priorityGlow 0.4s ease;
 }
 
-/** Colores especiales para los valores 1 a 5 en la prioridad */
-input[name="prioridad"][value="1"] { border-left: 4px solid #ef4444; } /** Rojo */
-input[name="prioridad"][value="2"] { border-left: 4px solid #f97316; } /** Naranja */
-input[name="prioridad"][value="3"] { border-left: 4px solid #eab308; } /** Amarillo */
-input[name="prioridad"][value="4"] { border-left: 4px solid #22c55e; } /** Verde */
-input[name="prioridad"][value="5"] { border-left: 4px solid #3b82f6; } /** Azul */
+
 
 /** Estilo responsive para pantallas pequeñas */
 @media (max-width: 768px) {

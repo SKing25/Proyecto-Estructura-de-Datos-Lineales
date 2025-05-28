@@ -742,7 +742,7 @@ class ColaPrioridad:
 
     def obtener_cola(self):
         # Retorna una lista de tuplas (prioridad, valor)
-        return self.heap
+        return sorted(self.heap)
 
 cola_prioridad = ColaPrioridad()  # Instancia global
 
