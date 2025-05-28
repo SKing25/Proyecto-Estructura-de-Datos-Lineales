@@ -1089,3 +1089,39 @@ document.head.appendChild(styleSheet);
             // Inicializar con listas por defecto
             changeEDLType('listas');
         });
+
+        document.addEventListener("DOMContentLoaded", () => {
+    const input = document.querySelector("#prioridad");
+    const btnUp = document.querySelector(".btn-up");
+    const btnDown = document.querySelector(".btn-down");
+
+    const updateButtons = () => {
+        const value = parseInt(input.value);
+        const min = parseInt(input.min);
+        const max = parseInt(input.max);
+
+        btnDown.disabled = value <= min;
+        btnUp.disabled = value >= max;
+    };
+
+    btnUp.addEventListener("click", () => {
+        const value = parseInt(input.value);
+        const max = parseInt(input.max);
+        if (value < max) {
+            input.value = value + 1;
+            updateButtons();
+        }
+    });
+
+    btnDown.addEventListener("click", () => {
+        const value = parseInt(input.value);
+        const min = parseInt(input.min);
+        if (value > min) {
+            input.value = value - 1;
+            updateButtons();
+        }
+    });
+
+    updateButtons(); // Inicia con botones correctos
+});
+// =================

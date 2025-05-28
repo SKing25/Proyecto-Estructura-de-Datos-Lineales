@@ -1141,17 +1141,77 @@ input[name="prioridad"]:invalid:not(:placeholder-shown) {
     animation: shake 0.5s ease-in-out; /** Efecto de vibración (Sacudida) */
 }
 
-/** Remueve las flechas del input tipo number en navegadores WebKit, Porque se ven feas */
-input[name="prioridad"]::-webkit-outer-spin-button,
-input[name="prioridad"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+/** Elimina a las flechas del input tipo number en navegadores WebKit, Porque se ven feas. */
+input[name="prioridad"][type=number]::-webkit-inner-spin-button,
+input[name="prioridad"][type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none; /** Remueve el estilo predeterminado */
 }
 
-/** Hace que el input tipo number luzca como texto en Firefox */
-input[name="prioridad"][type=number] {
-    -moz-appearance: textfield;
+.priority-wrapper {
+    display: inline-block;
 }
+
+/* Contenedor vertical tipo cápsula */
+.custom-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    background: var(--card-bg);
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    overflow: hidden;
+    
+    
+
+    border: 2px solid var(--primary-color);
+    border-radius: 2rem;
+    padding: 0.5rem;
+    width: 4rem;
+    transition: var(--transition-smooth);
+}
+
+/* Input minimalista y centrado */
+.custom-spinner input[type="number"] {
+    all: unset;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 0.4rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    
+}
+
+/* Botones suaves, sin deformar la cápsula */
+.custom-spinner button {
+    all: unset;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--bg-gradient); /** Color de la flecha del botón, de crecimiento // decrecimiento*/
+    padding: 0.4rem;
+    border-radius: 50%;
+    transition: transform 0.2s ease, background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+.custom-spinner button:hover {
+    background: var(--accent-color);
+    color: var(--text-color);
+    transform: scale(1.15);
+}
+
+.custom-spinner button:disabled {
+    opacity: 0.2;
+    background: transparent;
+    cursor: not-allowed;
+}
+
 
 /** Animación de sacudida para estado inválido */
 @keyframes shake {

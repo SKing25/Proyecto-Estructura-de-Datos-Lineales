@@ -30,8 +30,16 @@
             <div class="operation-card">
                 <h3>Encolar</h3>
                 <form action="/cola-prioridad/encolar" method="post">
-                    <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>
-                    <input type="number" name="prioridad" placeholder="Prioridad (1-5)" min="1" max="5" required>
+                    <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>  
+                    <div class="priority-wrapper">
+                    <input type="number" name="prioridad" id="prioridad" min="1" max="5" value="1" required>
+                    <div class="custom-spinner">
+                    <button type="button" class="btn-up">▲</button>
+                    <button type="button" class="btn-down">▼</button>
+            </div>
+        </div>
+
+                    
                     <input type="submit" value="Encolar">
                 </form>
             </div>
