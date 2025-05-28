@@ -1,8 +1,6 @@
 // ================================
-// FUNCIONALIDADES GLOBALES
+// MÓDULO: ThemeManager
 // ================================
-
-// Esta madre controla el tema claro/oscuro de toda la página
 class ThemeManager {
     constructor() {
         this.themeToggle = document.getElementById('themeToggle');
@@ -13,68 +11,51 @@ class ThemeManager {
     init() {
         if (!this.themeToggle) return;
         
-        // Cargar el tema que tenía guardado el usuario o usar claro por defecto
         const savedTheme = this.getSavedTheme() || 'light';
         this.applyTheme(savedTheme);
         
-        // Pa' cuando el usuario le dé click al botón del tema
-        this.themeToggle.addEventListener('click', () => {
-            this.toggleTheme();
-        });
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
     }
     
-    // Esta función busca el tema guardado en varios lugares por si acaso
     getSavedTheme() {
         try {
-            // Primero intenta localStorage, luego cookies, luego variable global
             return localStorage.getItem('theme') || this.getCookieTheme() || window.currentTheme || 'light';
         } catch (e) {
-            // Si localStorage está bloqueado, usa alternativas
             return this.getCookieTheme() || window.currentTheme || 'light';
         }
     }
     
-    // Guarda el tema en múltiples lugares pa' que no se pierda
     saveTheme(theme) {
         try {
             localStorage.setItem('theme', theme);
         } catch (e) {
-            // Si no puede usar localStorage, guarda en cookies
             console.warn('localStorage no disponible, usando cookies');
             this.setCookieTheme(theme);
         }
-        
-        // También lo guarda en una variable global como respaldo
         window.currentTheme = theme;
     }
     
-    // Lee el tema desde las cookies
     getCookieTheme() {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'theme') {
-                return value;
-            }
+            if (name === 'theme') return value;
         }
         return null;
     }
     
-    // Guarda el tema en cookies que duran 30 días
     setCookieTheme(theme) {
         const expires = new Date();
         expires.setTime(expires.getTime() + (30 * 24 * 60 * 60 * 1000));
         document.cookie = `theme=${theme};expires=${expires.toUTCString()};path=/`;
     }
     
-    // Aplica el tema a toda la página
     applyTheme(theme) {
         this.body.setAttribute('data-theme', theme);
         this.themeToggle.className = `theme-toggle ${theme}`;
         this.saveTheme(theme);
     }
     
-    // Cambia entre tema claro y oscuro
     toggleTheme() {
         const currentTheme = this.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -82,7 +63,9 @@ class ThemeManager {
     }
 }
 
-// Esta clase optimiza el renderizado cuando hay muchos elementos en listas
+// ================================
+// MÓDULO: ListOptimizer
+// ================================
 class ListOptimizer {
     constructor() {
         this.isOptimizing = false;
@@ -97,59 +80,48 @@ class ListOptimizer {
     init() {
         this.optimizeTableRendering();
         this.addLoadingIndicators();
-        this.setupIntersectionObserver(); // Mejora: lazy loading
+        this.setupIntersectionObserver();
     }
     
-    // Renderiza las tablas grandes por lotes pa' que no se cuelgue el navegador
     optimizeTableRendering() {
         const table = document.querySelector('table');
         if (!table) return;
         
         const tbody = table.querySelector('tbody');
         const rows = tbody?.querySelectorAll('tr');
-        
-        // Solo optimiza si hay más de 10 filas
         if (!rows || rows.length < 10) return;
         
         this.performanceMetrics.startTime = performance.now();
-        
-        // Oculta la tabla mientras se renderiza
         table.style.visibility = 'hidden';
         table.style.opacity = '0';
         
-        // Renderiza por lotes pa' mantener fluidez
         this.renderRowsInBatches(rows, table);
     }
     
-    // Renderiza las filas en grupos pequeños usando requestAnimationFrame
     renderRowsInBatches(rows, table) {
-        const batchSize = Math.min(20, Math.ceil(rows.length / 10)); // Mejora: tamaño dinámico
+        const batchSize = Math.min(20, Math.ceil(rows.length / 10));
         let currentIndex = 0;
         
         const renderBatch = () => {
             const endIndex = Math.min(currentIndex + batchSize, rows.length);
             
-            // Renderiza un lote de filas
             for (let i = currentIndex; i < endIndex; i++) {
                 const row = rows[i];
                 row.style.opacity = '0';
                 row.style.transform = 'translateY(10px)';
                 
-                // Anima cada fila con un pequeño delay
                 setTimeout(() => {
                     row.style.transition = 'all 0.3s ease';
                     row.style.opacity = '1';
                     row.style.transform = 'translateY(0)';
-                }, (i - currentIndex) * 25); // Mejora: delay más rápido
+                }, (i - currentIndex) * 25);
             }
             
             currentIndex = endIndex;
             
-            // Si quedan más filas, continúa en el siguiente frame
             if (currentIndex < rows.length) {
                 requestAnimationFrame(renderBatch);
             } else {
-                // Cuando termina, muestra la tabla
                 this.finishTableRender(table);
             }
         };
@@ -157,39 +129,28 @@ class ListOptimizer {
         requestAnimationFrame(renderBatch);
     }
     
-   // función separada pa' finalizar el renderizado
     finishTableRender(table) {
         setTimeout(() => {
             table.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
             table.style.visibility = 'visible';
             table.style.opacity = '1';
-            
-            // Métricas de rendimiento
             this.performanceMetrics.renderTime = performance.now() - this.performanceMetrics.startTime;
             console.log(`Tabla renderizada en ${this.performanceMetrics.renderTime.toFixed(2)}ms`);
         }, 100);
     }
     
-    // Mejora: Intersection Observer pa' lazy loading
     setupIntersectionObserver() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('visible');
             });
-        }, {
-            threshold: 0.1,
-            rootMargin: '50px'
-        });
+        }, { threshold: 0.1, rootMargin: '50px' });
         
-        // Observa elementos que pueden beneficiarse de lazy loading
         document.querySelectorAll('.operation-card, .card').forEach(el => {
             observer.observe(el);
         });
     }
     
-    // Agrega indicadores de carga a los formularios
     addLoadingIndicators() {
         const forms = document.querySelectorAll('form');
         forms.forEach(form => {
@@ -202,38 +163,27 @@ class ListOptimizer {
         });
     }
     
-    // función separada pa' el loading de formularios
     showFormLoading(submitBtn, form) {
         const originalText = submitBtn.value || submitBtn.textContent;
         submitBtn.disabled = true;
         
-        if (submitBtn.tagName === 'INPUT') {
-            submitBtn.value = 'Procesando...';
-        } else {
-            submitBtn.textContent = 'Procesando...';
-        }
+        submitBtn.tagName === 'INPUT' 
+            ? submitBtn.value = 'Procesando...' 
+            : submitBtn.textContent = 'Procesando...';
         
-        // Muestra spinner
         const spinner = this.createLoadingSpinner();
         form.appendChild(spinner);
         
-        // Auto-reset después de 10 segundos por si acaso 
         setTimeout(() => {
             if (submitBtn.disabled) {
                 submitBtn.disabled = false;
-                if (submitBtn.tagName === 'INPUT') {
-                    submitBtn.value = originalText;
-                } else {
-                    submitBtn.textContent = originalText;
-                }
-                if (spinner.parentNode) {
-                    spinner.remove();
-                }
+                submitBtn.tagName === 'INPUT' 
+                    ? submitBtn.value = originalText 
+                    : submitBtn.textContent = originalText;
+                spinner.remove();
             }
         }, 10000);
     }
-    
-    // función separada pa' crear el mensaje de carga de datos
     
     createLoadingSpinner() {
         const spinner = document.createElement('div');
@@ -244,15 +194,85 @@ class ListOptimizer {
         `;
         return spinner;
     }
+
+// En la clase ListOptimizer, agrega:
+optimizeTableRendering() {
+    const table = document.querySelector('table');
+    if (!table) return;
+    
+    // Solo optimiza si hay más de 100 filas
+    if (table.rows.length > 100) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'performance-warning';
+        infoDiv.innerHTML = `
+            <i class="fas fa-info-circle"></i>
+            Tabla demasiado grande (${table.rows.length} filas). 
+            Mostrando solo vista resumida.
+        `;
+        table.parentNode.insertBefore(infoDiv, table);
+        
+        // Ocultar tabla completa
+        table.style.display = 'none';
+        
+        // Crear tabla resumida
+        this.createSummaryView(table);
+    }
 }
 
-// Esta clase maneja las partículas de fondo que cambian según el tema
+createSummaryView(fullTable) {
+    const summaryContainer = document.createElement('div');
+    summaryContainer.className = 'table-summary';
+    
+    // Cabecera
+    const headerRow = fullTable.rows[0];
+    let headerHTML = '<tr>';
+    for (let i = 0; i < headerRow.cells.length; i++) {
+        headerHTML += `<th>${headerRow.cells[i].textContent}</th>`;
+    }
+    headerHTML += '</tr>';
+    
+    // Primeros elementos
+    let bodyHTML = '';
+    for (let i = 1; i <= 5; i++) {
+        if (fullTable.rows[i]) {
+            bodyHTML += '<tr>';
+            for (let j = 0; j < fullTable.rows[i].cells.length; j++) {
+                bodyHTML += `<td>${fullTable.rows[i].cells[j].textContent}</td>`;
+            }
+            bodyHTML += '</tr>';
+        }
+    }
+    
+    // Separador
+    bodyHTML += `<tr><td colspan="${headerRow.cells.length}" style="text-align: center">⋮</td></tr>`;
+    
+    // Últimos elementos
+    for (let i = Math.max(fullTable.rows.length - 5, 6); i < fullTable.rows.length; i++) {
+        bodyHTML += '<tr>';
+        for (let j = 0; j < fullTable.rows[i].cells.length; j++) {
+            bodyHTML += `<td>${fullTable.rows[i].cells[j].textContent}</td>`;
+        }
+        bodyHTML += '</tr>';
+    }
+    
+    // Tabla resumida
+    const summaryTable = document.createElement('table');
+    summaryTable.className = 'summary-view';
+    summaryTable.innerHTML = `<thead>${headerHTML}</thead><tbody>${bodyHTML}</tbody>`;
+    
+    summaryContainer.appendChild(summaryTable);
+    fullTable.parentNode.appendChild(summaryContainer);
+}
+}
+
+// ================================
+// MÓDULO: ParticleManager
+// ================================
 class ParticleManager {
     constructor() {
         this.particlesContainer = document.querySelector('.background-particles');
         this.particles = [];
         this.currentTheme = 'light';
-        this.animationId = null; // Mejora: controlar animaciones
         this.init();
     }
     
@@ -263,7 +283,6 @@ class ParticleManager {
         this.observeThemeChanges();
     }
     
-    // Observa cuando cambia el tema pa' actualizar las partículas
     observeThemeChanges() {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
@@ -277,125 +296,72 @@ class ParticleManager {
             });
         });
         
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['data-theme']
-        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
     }
     
-    // Crea las partículas según el tema actual
     createThemedParticles() {
         this.clearParticles();
-        
-        if (this.currentTheme === 'dark') {
-            this.createStarsAndMeteors(); // Pa' tema oscuro: estrellas y meteoros
-        } else {
-            this.createSunbeamsAndClouds(); // Pa' tema claro: rayos de sol y nubes
-        }
+        this.currentTheme === 'dark' 
+            ? this.createStarsAndMeteors() 
+            : this.createSunbeamsAndClouds();
     }
     
-    // Crea efectos nocturnos: estrellas, meteoros y brillos
     createStarsAndMeteors() {
-        // Estrellas estáticas que brillan
-        for (let i = 0; i < 15; i++) {
-            const star = this.createParticle('star', '✦');
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = -Math.random() * 3 + 's';
-            this.addParticle(star);
-        }
-        
-        // Meteoros que cruzan la pantalla
-        for (let i = 0; i < 4; i++) {
-            const meteor = this.createParticle('meteor', '🌒');
-            meteor.style.left = (Math.random() * 120 - 20) + '%';
-            meteor.style.animationDelay = -Math.random() * 8 + 's';
-            meteor.style.animationDuration = (3 + Math.random() * 2) + 's';
-            meteor.style.transform = `rotate(${Math.random() * 360}deg)`;
-            this.addParticle(meteor);
-        }
-        
-        // Estrellas con efectos de centelleo
-        for (let i = 0; i < 6; i++) {
-            const twinkleStar = this.createParticle('twinkle-star', '⭐');
-            twinkleStar.style.left = Math.random() * 100 + '%';
-            twinkleStar.style.top = Math.random() * 100 + '%';
-            twinkleStar.style.animationDelay = -Math.random() * 4 + 's';
-            this.addParticle(twinkleStar);
-        }
+        // Creación de estrellas y meteoros
+        for (let i = 0; i < 15; i++) this.createParticle('star', '✦', true);
+        for (let i = 0; i < 4; i++) this.createParticle('meteor', '🌒', false, true);
+        for (let i = 0; i < 6; i++) this.createParticle('twinkle-star', '⭐', true);
     }
     
-    // Crea efectos diurnos: sol, nubes y destellos
     createSunbeamsAndClouds() {
-        // Rayos de sol que se mueven lentamente
-        for (let i = 0; i < 8; i++) {
-            const sunbeam = this.createParticle('sunbeam', '☀️');
-            sunbeam.style.left = Math.random() * 100 + '%';
-            sunbeam.style.animationDelay = -Math.random() * 6 + 's';
-            sunbeam.style.animationDuration = (5 + Math.random() * 3) + 's';
-            this.addParticle(sunbeam);
-        }
-        
-        // Nubes que flotan horizontalmente
-        for (let i = 0; i < 5; i++) {
-            const cloud = this.createParticle('cloud', '☁️');
-            cloud.style.left = (Math.random() * 120 - 20) + '%';
-            cloud.style.top = (Math.random() * 30 + 10) + '%';
-            cloud.style.animationDelay = -Math.random() * 10 + 's';
-            cloud.style.animationDuration = (8 + Math.random() * 4) + 's';
-            this.addParticle(cloud);
-        }
-        
-        // Destellos de luz dorada
-        for (let i = 0; i < 10; i++) {
-            const sparkle = this.createParticle('light-sparkle', '✨');
-            sparkle.style.left = Math.random() * 100 + '%';
-            sparkle.style.animationDelay = -Math.random() * 4 + 's';
-            sparkle.style.animationDuration = (3 + Math.random() * 2) + 's';
-            this.addParticle(sparkle);
-        }
+        // Creación de rayos de sol y nubes
+        for (let i = 0; i < 8; i++) this.createParticle('sunbeam', '☀️', false, false, true);
+        for (let i = 0; i < 5; i++) this.createParticle('cloud', '☁️', false, false, false, true);
+        for (let i = 0; i < 10; i++) this.createParticle('light-sparkle', '✨', true);
     }
     
-    // Mejora: función helper pa' crear partículas
-    createParticle(className, content) {
+    createParticle(className, content, isStatic = false, isMeteor = false, isSunbeam = false, isCloud = false) {
         const particle = document.createElement('div');
         particle.className = `particle ${className}`;
         particle.innerHTML = content;
-        return particle;
-    }
-    
-    // función helper pa' agregar partículas
-    addParticle(particle) {
+        
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = isCloud ? (Math.random() * 30 + 10) + '%' : Math.random() * 100 + '%';
+        
+        if (isMeteor) {
+            particle.style.left = (Math.random() * 120 - 20) + '%';
+            particle.style.animationDelay = -Math.random() * 8 + 's';
+            particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+            particle.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }
+        
+        if (isSunbeam) {
+            particle.style.animationDelay = -Math.random() * 6 + 's';
+            particle.style.animationDuration = (5 + Math.random() * 3) + 's';
+        }
+        
+        if (isStatic) {
+            particle.style.animationDelay = -Math.random() * (className === 'star' ? 3 : 4) + 's';
+        }
+        
         this.particlesContainer.appendChild(particle);
         this.particles.push(particle);
     }
     
-    // Transición suave cuando cambia el tema - esto está chingón
     updateParticlesForTheme() {
-        const morphDuration = 1200;
-        const newTheme = this.currentTheme;
-        
-        // Separa las partículas: unas se transforman, otras desaparecen
         const morphableParticles = [];
         const fadingParticles = [];
         
         this.particles.forEach((particle, index) => {
-            // 60% se transforman, 40% desaparecen
-            if (index < Math.min(this.particles.length * 0.6, 8)) {
-                morphableParticles.push(particle);
-            } else {
-                fadingParticles.push(particle);
-            }
+            index < Math.min(this.particles.length * 0.6, 8)
+                ? morphableParticles.push(particle)
+                : fadingParticles.push(particle);
         });
         
-        // Fase 1: Transforma algunas partículas con efecto morphing
         morphableParticles.forEach((particle, index) => {
-            setTimeout(() => {
-                this.morphParticle(particle, newTheme);
-            }, index * 150);
+            setTimeout(() => this.morphParticle(particle, this.currentTheme), index * 150);
         });
         
-        // Fase 2: Desvanece las partículas restantes
         fadingParticles.forEach((particle, index) => {
             setTimeout(() => {
                 particle.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -405,32 +371,21 @@ class ParticleManager {
             }, index * 100);
         });
         
-        // Fase 3: Limpia y crea partículas nuevas
         setTimeout(() => {
-            this.cleanupAndCreateNew(fadingParticles, morphableParticles, newTheme);
-        }, morphDuration);
+            this.cleanupAndCreateNew(fadingParticles, morphableParticles);
+        }, 1200);
     }
     
-    // función separada pa' cleanup
-    cleanupAndCreateNew(fadingParticles, morphableParticles, newTheme) {
-        // bye bye partículas que se desvanecieron
-        fadingParticles.forEach(particle => {
-            if (particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-        });
-        
-        // Actualiza la lista de partículas activas
+    cleanupAndCreateNew(fadingParticles, morphableParticles) {
+        fadingParticles.forEach(particle => particle.remove());
         this.particles = morphableParticles;
-        
-        // Crea partículas adicionales si es necesario
-        this.createAdditionalParticles(newTheme);
+        this.createAdditionalParticles();
     }
-    
     
     morphParticle(particle, newTheme) {
-        // Crea un overlay pa' la transición
+        const newContent = this.getNewParticleContent(newTheme);
         const morphOverlay = document.createElement('div');
+        
         Object.assign(morphOverlay.style, {
             position: 'absolute',
             top: '0',
@@ -444,56 +399,43 @@ class ParticleManager {
             pointerEvents: 'none'
         });
         
-        // Decide qué mostrar según el tema
-        const newContent = this.getNewParticleContent(newTheme);
         morphOverlay.innerHTML = newContent.content;
         morphOverlay.className = `particle ${newContent.className}`;
-        
         particle.appendChild(morphOverlay);
         
-        // Ejecuta la transformación en etapas
         this.executeParticleTransformation(particle, morphOverlay, newTheme);
     }
     
-    // función separada pa' obtener contenido nuevo
     getNewParticleContent(newTheme) {
-        if (newTheme === 'dark') {
-            return Math.random() > 0.5 
-                ? { content: '✦', className: 'star' }
-                : { content: '⭐', className: 'twinkle-star' };
-        } else {
-            return Math.random() > 0.5
-                ? { content: '☀️', className: 'sunbeam' }
+        return newTheme === 'dark'
+            ? Math.random() > 0.5 
+                ? { content: '✦', className: 'star' } 
+                : { content: '⭐', className: 'twinkle-star' }
+            : Math.random() > 0.5
+                ? { content: '☀️', className: 'sunbeam' } 
                 : { content: '✨', className: 'light-sparkle' };
-        }
     }
     
-    // Mejora: función separada pa' ejecutar la transformación
     executeParticleTransformation(particle, morphOverlay, newTheme) {
         setTimeout(() => {
-            // Fase 1: Desvanece contenido original
             particle.style.transition = 'all 0.6s ease-out';
             particle.style.filter = 'blur(3px) brightness(0.3)';
             
-            // Fase 2: Muestra nuevo contenido
             setTimeout(() => {
                 morphOverlay.style.opacity = '1';
                 morphOverlay.style.transform = 'scale(1.2)';
                 
-                // Fase 3: Reemplaza completamente
                 setTimeout(() => {
                     particle.innerHTML = morphOverlay.innerHTML;
                     particle.className = morphOverlay.className;
                     particle.style.filter = 'blur(0px) brightness(1)';
                     particle.style.transition = 'all 0.4s ease-out';
-                    
                     this.applyThemeSpecificAnimation(particle, newTheme);
                 }, 300);
             }, 200);
         }, 100);
     }
     
-    // Aplica animaciones específicas según el tema
     applyThemeSpecificAnimation(particle, theme) {
         if (theme === 'dark') {
             if (particle.classList.contains('star')) {
@@ -512,28 +454,26 @@ class ParticleManager {
         }
     }
     
-    // Crea partículas adicionales y completar el efecto
-    createAdditionalParticles(theme) {
+    createAdditionalParticles() {
         const currentCount = this.particles.length;
-        const targetCount = theme === 'dark' ? 25 : 23;
+        const targetCount = this.currentTheme === 'dark' ? 25 : 23;
         const needsMore = targetCount - currentCount;
         
         if (needsMore > 0) {
             for (let i = 0; i < needsMore; i++) {
                 setTimeout(() => {
-                    const particle = this.createNewParticleForTheme(theme);
+                    const particle = this.createNewParticleForTheme();
                     this.animateParticleEntrance(particle);
                 }, i * 200 + Math.random() * 300);
             }
         }
     }
     
-    // función separada pa crear partículas nuevas
-    createNewParticleForTheme(theme) {
+    createNewParticleForTheme() {
         const particle = document.createElement('div');
         particle.className = 'particle';
         
-        if (theme === 'dark') {
+        if (this.currentTheme === 'dark') {
             if (Math.random() > 0.7) {
                 particle.className += ' meteor';
                 particle.innerHTML = '🌒';
@@ -548,7 +488,7 @@ class ParticleManager {
             if (Math.random() > 0.6) {
                 particle.className += ' cloud';
                 particle.innerHTML = '☁️';
-                particle.style.top = (Math.random() * 30 + 10) + '%';
+                particle.style.top = (Math.random() * 40 + 10) + '%';
                 particle.style.animationDelay = -Math.random() * 10 + 's';
                 particle.style.animationDuration = (8 + Math.random() * 4) + 's';
             } else {
@@ -559,7 +499,6 @@ class ParticleManager {
             }
         }
         
-        // Posicionamiento
         particle.style.left = Math.random() * 100 + '%';
         if (!particle.classList.contains('cloud')) {
             particle.style.top = Math.random() * 100 + '%';
@@ -568,9 +507,7 @@ class ParticleManager {
         return particle;
     }
     
-    // función separada pa' animar entrada
     animateParticleEntrance(particle) {
-        // Estado inicial
         particle.style.opacity = '0';
         particle.style.transform = 'scale(0)';
         particle.style.filter = 'blur(3px)';
@@ -578,7 +515,6 @@ class ParticleManager {
         this.particlesContainer.appendChild(particle);
         this.particles.push(particle);
         
-        // Anima entrada
         setTimeout(() => {
             particle.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
             particle.style.opacity = '1';
@@ -587,32 +523,14 @@ class ParticleManager {
         }, 50);
     }
     
-    // Limpia todas las partículas
     clearParticles() {
-        this.particles.forEach(particle => {
-            if (particle && particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-        });
+        this.particles.forEach(particle => particle.remove());
         this.particles = [];
-    }
-    
-    // función pa' pausar/reanudar animaciones
-    pauseAnimations() {
-        this.particles.forEach(particle => {
-            particle.style.animationPlayState = 'paused';
-        });
-    }
-    
-    resumeAnimations() {
-        this.particles.forEach(particle => {
-            particle.style.animationPlayState = 'running';
-        });
     }
 }
 
 // ================================
-// FUNCIONALIDADES DEL CARRUSEL (INDEX)
+// MÓDULO: CarouselManager
 // ================================
 class CarouselManager {
     constructor() {
@@ -649,9 +567,6 @@ class CarouselManager {
     }
 
     setupEventListeners() {
-        this.nextBtn?.removeEventListener('click', this.nextSlide);
-        this.prevBtn?.removeEventListener('click', this.prevSlide);
-        
         this.nextBtn?.addEventListener('click', () => this.nextSlide());
         this.prevBtn?.addEventListener('click', () => this.prevSlide());
         this.selectBtn?.addEventListener('click', () => this.selectCurrentStructure());
@@ -675,9 +590,7 @@ class CarouselManager {
             indicator.classList.toggle('active', index === this.currentSlide);
         });
 
-        if (activeContent) {
-            activeContent.style.transform = `translateX(-${this.currentSlide * 100}%)`;
-        }
+        if (activeContent) activeContent.style.transform = `translateX(-${this.currentSlide * 100}%)`;
     }
 
     nextSlide() {
@@ -705,10 +618,8 @@ class CarouselManager {
     }
     
     startAutoSlide() {
-        this.stopAutoSlide(); // Limpiar cualquier intervalo existente
-        this.autoSlideInterval = setInterval(() => {
-            this.nextSlide();
-        }, 5000);
+        this.stopAutoSlide();
+        this.autoSlideInterval = setInterval(() => this.nextSlide(), 5000);
     }
     
     stopAutoSlide() {
@@ -720,9 +631,8 @@ class CarouselManager {
 }
 
 // ================================
-// EFECTOS VISUALES PARA LISTAS
+// MÓDULO: ListVisualEffects
 // ================================
-
 class ListVisualEffects {
     constructor() {
         this.init();
@@ -740,15 +650,9 @@ class ListVisualEffects {
         const currentPage = this.getCurrentPageType();
         
         switch(currentPage) {
-            case 'simple':
-                this.setupSimpleListEffects(rows);
-                break;
-            case 'doble':
-                this.setupDoubleListEffects(rows);
-                break;
-            case 'circular':
-                this.setupCircularListEffects(rows);
-                break;
+            case 'simple': this.setupSimpleListEffects(rows); break;
+            case 'doble': this.setupDoubleListEffects(rows); break;
+            case 'circular': this.setupCircularListEffects(rows); break;
         }
     }
     
@@ -761,7 +665,6 @@ class ListVisualEffects {
     }
     
     setupSimpleListEffects(rows) {
-        // Optimización: No aplicar animaciones si hay demasiadas filas
         const shouldAnimate = rows.length < 100;
         
         rows.forEach((row, index) => {
@@ -773,17 +676,7 @@ class ListVisualEffects {
                 row.title = 'Último elemento (apunta a NULL)';
             }
             
-            if (shouldAnimate) {
-                // Animación de entrada solo para listas pequeñas
-                row.style.opacity = '0';
-                row.style.transform = 'translateX(-20px)';
-                
-                setTimeout(() => {
-                    row.style.transition = 'all 0.3s ease';
-                    row.style.opacity = '1';
-                    row.style.transform = 'translateX(0)';
-                }, Math.min(index * 50, 2000)); // Máximo 2 segundos de delay
-            }
+            if (shouldAnimate) this.animateRowEntrance(row, index);
         });
     }
     
@@ -791,26 +684,11 @@ class ListVisualEffects {
         const shouldAnimate = rows.length < 100;
         
         rows.forEach((row, index) => {
-            // Indicar conexiones bidireccionales
-            if (index > 0) {
-                row.style.borderLeft = '3px solid #764ba2';
-            }
-            if (index < rows.length - 1) {
-                row.style.borderRight = '3px solid #667eea';
-            }
+            if (index > 0) row.style.borderLeft = '3px solid #764ba2';
+            if (index < rows.length - 1) row.style.borderRight = '3px solid #667eea';
             row.title = 'Elemento con navegación bidireccional';
             
-            if (shouldAnimate) {
-                // Animación de entrada alternada solo para listas pequeñas
-                row.style.opacity = '0';
-                row.style.transform = index % 2 === 0 ? 'translateX(-20px)' : 'translateX(20px)';
-                
-                setTimeout(() => {
-                    row.style.transition = 'all 0.4s ease';
-                    row.style.opacity = '1';
-                    row.style.transform = 'translateX(0)';
-                }, Math.min(index * 75, 2000));
-            }
+            if (shouldAnimate) this.animateRowEntrance(row, index, index % 2 === 0 ? -20 : 20);
         });
     }
     
@@ -821,7 +699,6 @@ class ListVisualEffects {
             row.style.borderRadius = '8px';
             row.title = 'Parte de la estructura circular';
             
-            // Efecto circular visual
             if (index === 0) {
                 row.style.borderLeft = '3px solid #f093fb';
                 row.style.borderTop = '3px solid #f093fb';
@@ -831,25 +708,36 @@ class ListVisualEffects {
                 row.style.borderBottom = '3px solid #667eea';
             }
             
-            if (shouldAnimate) {
-                // Animación circular solo para listas pequeñas
-                row.style.opacity = '0';
-                row.style.transform = 'scale(0.8) rotate(-10deg)';
-                
-                setTimeout(() => {
-                    row.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-                    row.style.opacity = '1';
-                    row.style.transform = 'scale(1) rotate(0deg)';
-                }, Math.min(index * 100, 2000));
-            }
+            if (shouldAnimate) this.animateCircularEntrance(row, index);
         });
+    }
+    
+    animateRowEntrance(row, index, translateX = -20) {
+        row.style.opacity = '0';
+        row.style.transform = `translateX(${translateX}px)`;
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateX(0)';
+        }, Math.min(index * 50, 2000));
+    }
+    
+    animateCircularEntrance(row, index) {
+        row.style.opacity = '0';
+        row.style.transform = 'scale(0.8) rotate(-10deg)';
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            row.style.opacity = '1';
+            row.style.transform = 'scale(1) rotate(0deg)';
+        }, Math.min(index * 100, 2000));
     }
 }
 
 // ================================
-// UTILIDADES GENERALES
+// MÓDULO: Utils
 // ================================
-
 class Utils {
     static showInfo() {
         const infoPanel = document.getElementById('infoPanel');
@@ -859,7 +747,6 @@ class Utils {
     }
     
     static addHoverEffects() {
-        // Agregar efectos hover a las tarjetas de operación
         const operationCards = document.querySelectorAll('.operation-card');
         operationCards.forEach(card => {
             card.addEventListener('mouseenter', function() {
@@ -875,46 +762,173 @@ class Utils {
     }
     
     static enhanceButtons() {
-        // Mejorar la interactividad de los botones
         const buttons = document.querySelectorAll('input[type="submit"], button');
         buttons.forEach(btn => {
             btn.addEventListener('click', function(e) {
-                // Efecto ripple
                 const ripple = document.createElement('span');
                 const rect = this.getBoundingClientRect();
                 const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
                 
                 ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
                 ripple.classList.add('ripple');
                 
                 this.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
+                setTimeout(() => ripple.remove(), 600);
             });
+        });
+    }
+}
+
+// ================================
+// MÓDULO: EDLSelector
+// ================================
+class EDLSelector {
+    constructor() {
+        this.edlSelector = document.getElementById('edlType');
+        this.headerDescription = document.getElementById('headerDescription');
+        this.infoPanelTitle = document.getElementById('infoPanelTitle');
+        this.infoPanelContent = document.getElementById('infoPanelContent');
+        this.visualItems = document.querySelectorAll('.edl-visual-item');
+        
+        this.edlConfigs = {
+            listas: {
+                description: "Selecciona una lista enlazada para comenzar",
+                infoTitle: "Acerca de las Listas Enlazadas",
+                infoContent: `
+                    <p>Las listas enlazadas son estructuras de datos lineales donde los elementos se conectan mediante punteros.</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li><strong>Lista Simple:</strong> Ideal para inserción frecuente al final</li>
+                        <li><strong>Lista Doble:</strong> Mejor para navegación bidireccional</li>
+                        <li><strong>Lista Circular:</strong> Perfecta para algoritmos de Round Robin</li>
+                    </ul>
+                `
+            },
+            pilas: {
+                description: "Selecciona una implementación de pila para comenzar",
+                infoTitle: "Acerca de las Pilas",
+                infoContent: `
+                    <p>Las pilas son estructuras de datos LIFO (Last In, First Out) donde el último elemento añadido es el primero en salir.</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li><strong>Pila con Lista:</strong> Implementación dinámica usando lista enlazada</li>
+                        <li><strong>Pila con Arreglo:</strong> Implementación estática usando arreglo (próximamente)</li>
+                    </ul>
+                `
+            },
+            colas: {
+                description: "Selecciona una implementación de cola para comenzar",
+                infoTitle: "Acerca de las Colas",
+                infoContent: `
+                    <p>Las colas son estructuras de datos FIFO (First In, First Out) donde el primer elemento añadido es el primero en salir.</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li><strong>Cola Simple:</strong> Implementación básica FIFO (próximamente)</li>
+                        <li><strong>Cola Circular:</strong> Optimiza el uso de memoria (próximamente)</li>
+                        <li><strong>Cola de Prioridad:</strong> Elementos ordenados por prioridad (próximamente)</li>
+                    </ul>
+                `
+            }
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.changeEDLType('listas');
+    }
+    
+    setupEventListeners() {
+        this.edlSelector.addEventListener('change', () => this.changeEDLType(this.edlSelector.value));
+        
+        this.visualItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.getAttribute('data-value');
+                this.edlSelector.value = value;
+                this.edlSelector.dispatchEvent(new Event('change', { bubbles: true }));
+                this.visualItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    }
+    
+    changeEDLType(type) {
+        document.querySelectorAll('.edl-content').forEach(content => content.classList.add('hidden'));
+        
+        const selectedContent = document.getElementById(`${type}-content`);
+        if (selectedContent) selectedContent.classList.remove('hidden');
+        
+        if (window.carousel) {
+            window.carousel.updateCarouselElements();
+            window.carousel.generateIndicators();
+            window.carousel.updateCarousel();
+        }
+        
+        const config = this.edlConfigs[type];
+        if (config) {
+            this.headerDescription.textContent = config.description;
+            this.infoPanelTitle.textContent = config.infoTitle;
+            this.infoPanelContent.innerHTML = config.infoContent;
+        }
+    }
+}
+
+// ================================
+// INICIALIZACIÓN PRINCIPAL
+// ================================
+
+
+// Actualizar el sistema de búsqueda para mantener la paginación
+class SearchManager {
+    constructor() {
+        this.searchForms = document.querySelectorAll('form[action*="/buscar"]');
+        this.init();
+    }
+    
+    init() {
+        this.searchForms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleSearch(form);
+            });
+        });
+    }
+    
+    handleSearch(form) {
+        const formData = new FormData(form);
+        const searchValue = formData.get('valor');
+        const currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+        
+        // Conservar parámetros de paginación en la búsqueda
+        const action = `${form.getAttribute('action')}?page=${currentPage}`;
+        
+        fetch(action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.documentElement.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error en la búsqueda:', error);
         });
     }
 }
 
 
 
-// ================================
-// INICIALIZACIÓN
-// ================================
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar todos los managers
+    // Inicializar todos los módulos
     new ThemeManager();
     new ParticleManager();
-     window.carousel = new CarouselManager();
+    window.carousel = new CarouselManager();
     new ListOptimizer(); 
     new ListVisualEffects();
-    
+    new EDLSelector();
+    new SearchManager();
     
     // Aplicar utilidades
     Utils.addHoverEffects();
@@ -922,191 +936,71 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Hacer disponible la función showInfo globalmente
     window.showInfo = Utils.showInfo;
+    
+    // Insertar estilos globales
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-animation {
+            to { transform: scale(4); opacity: 0; }
+        }
+        
+        button, input[type="submit"] {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .operation-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .loading-spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .spinner-circle {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Optimización para tablas grandes */
+        table { will-change: opacity, visibility; }
+        tbody tr { will-change: opacity, transform; }
+        
+        /* Reducir animaciones en listas grandes */
+        @media (max-height: 800px) {
+            .particle { animation-duration: 8s !important; }
+        }
+    `;
+    document.head.appendChild(styleSheet);
 });
-
-// Agregar estilos para el efecto ripple y optimizaciones
-const rippleStyles = `
-.ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
-    transform: scale(0);
-    animation: ripple-animation 0.6s linear;
-    pointer-events: none;
-}
-
-@keyframes ripple-animation {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
-
-button, input[type="submit"] {
-    position: relative;
-    overflow: hidden;
-}
-
-.operation-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.loading-spinner {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-.spinner-circle {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Optimización para tablas grandes */
-table {
-    will-change: opacity, visibility;
-}
-
-tbody tr {
-    will-change: opacity, transform;
-}
-
-/* Reducir animaciones en listas grandes */
-@media (max-height: 800px) {
-    .particle {
-        animation-duration: 8s !important;
-    }
-}
-`;
-
-// Insertar estilos en el documento
-const styleSheet = document.createElement('style');
-styleSheet.textContent = rippleStyles;
-document.head.appendChild(styleSheet);
-
-
-// ================================
-
-
-  // Funcionalidad específica para el selector de EDL
-        document.addEventListener('DOMContentLoaded', function() {
-            const edlSelector = document.getElementById('edlType');
-            const headerDescription = document.getElementById('headerDescription');
-            const infoPanelTitle = document.getElementById('infoPanelTitle');
-            const infoPanelContent = document.getElementById('infoPanelContent');
-            
-            // Configuraciones para cada tipo de EDL
-            const edlConfigs = {
-                listas: {
-                    description: "Selecciona una lista enlazada para comenzar",
-                    infoTitle: "Acerca de las Listas Enlazadas",
-                    infoContent: `
-                        <p>Las listas enlazadas son estructuras de datos lineales donde los elementos se conectan mediante punteros.</p>
-                        <ul style="text-align: left; margin-top: 1rem;">
-                            <li><strong>Lista Simple:</strong> Ideal para inserción frecuente al final</li>
-                            <li><strong>Lista Doble:</strong> Mejor para navegación bidireccional</li>
-                            <li><strong>Lista Circular:</strong> Perfecta para algoritmos de Round Robin</li>
-                        </ul>
-                    `
-                },
-                pilas: {
-                    description: "Selecciona una implementación de pila para comenzar",
-                    infoTitle: "Acerca de las Pilas",
-                    infoContent: `
-                        <p>Las pilas son estructuras de datos LIFO (Last In, First Out) donde el último elemento añadido es el primero en salir.</p>
-                        <ul style="text-align: left; margin-top: 1rem;">
-                            <li><strong>Pila con Lista:</strong> Implementación dinámica usando lista enlazada</li>
-                            <li><strong>Pila con Arreglo:</strong> Implementación estática usando arreglo (próximamente)</li>
-                        </ul>
-                    `
-                },
-                colas: {
-                    description: "Selecciona una implementación de cola para comenzar",
-                    infoTitle: "Acerca de las Colas",
-                    infoContent: `
-                        <p>Las colas son estructuras de datos FIFO (First In, First Out) donde el primer elemento añadido es el primero en salir.</p>
-                        <ul style="text-align: left; margin-top: 1rem;">
-                            <li><strong>Cola Simple:</strong> Implementación básica FIFO (próximamente)</li>
-                            <li><strong>Cola Circular:</strong> Optimiza el uso de memoria (próximamente)</li>
-                            <li><strong>Cola de Prioridad:</strong> Elementos ordenados por prioridad (próximamente)</li>
-                        </ul>
-                    `
-                }
-            };
-            
-            // Función para cambiar el tipo de EDL
-            function changeEDLType(type) {
-    document.querySelectorAll('.edl-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    const selectedContent = document.getElementById(type + '-content');
-    if (selectedContent) {
-        selectedContent.classList.remove('hidden');
-    }
-    
-    // Actualizar carrusel
-    if (window.carousel) {
-        window.carousel.updateCarouselElements();
-        window.carousel.generateIndicators();
-        window.carousel.updateCarousel();
-    }
-    
-    // Actualizar contenido informativo
-    const config = edlConfigs[type];
-    if (config) {
-        headerDescription.textContent = config.description;
-        infoPanelTitle.textContent = config.infoTitle;
-        infoPanelContent.innerHTML = config.infoContent;
-    }
-}
-            
-            // Event listener para el selector
-            edlSelector.addEventListener('change', function() {
-                changeEDLType(this.value);
-            });
-            
-            // Inicializar con listas por defecto
-            changeEDLType('listas');
-        });
-
-        const visualItems = document.querySelectorAll('.edl-visual-item');
-const realSelect = document.getElementById('edlType');
-
-visualItems.forEach(item => {
-  item.addEventListener('click', () => {
-    const value = item.getAttribute('data-value');
-
-    // Setear el valor del select oculto
-    realSelect.value = value;
-
-    // Disparar manualmente el evento "change" para activar el carrusel
-    const event = new Event('change', { bubbles: true });
-    realSelect.dispatchEvent(event);
-
-    // Marcar visualmente el ítem activo
-    visualItems.forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-  });
-});
-
