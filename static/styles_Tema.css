@@ -1,0 +1,483 @@
+/* Estilos Globales y Variables CSS */
+/* Tema Claro */
+/* Definición de variables CSS para el tema claro */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #f093fb;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-bg: #ffffff;
+    --text-color: #2d3748;
+    --text-light: #718096;
+    --border-radius: 12px;
+    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tema Oscuro */
+/* Definición de variables CSS para el tema oscuro */
+/* Se aplican las mismas variables pero con diferentes valores */
+[data-theme="dark"] {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #f093fb;
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --card-bg: #2d3748;
+    --text-color: #e2e8f0;
+    --text-light: #a0aec0;
+    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+/* Estilos Globales */
+/* Se aplican estilos globales para el cuerpo y elementos comunes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Se establece un estilo de fuente y color de texto por defecto */
+html {
+    scroll-behavior: smooth;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    transition: var(--transition-smooth);
+    overflow-x: hidden;
+}
+
+/* Toggle de Tema */
+.theme-toggle {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 50px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-medium);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 60px;
+    justify-content: center;
+}
+/* Se aplican estilos para el icono del toggle de tema */
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-heavy);
+}
+/* Se aplican estilos para los iconos de sol y luna */
+.theme-icon {
+    font-size: 1.5rem;
+    transition: var(--transition-smooth);
+}
+
+.theme-toggle.dark .sun-icon {
+    opacity: 0;
+    transform: rotate(180deg) scale(0);
+}
+
+.theme-toggle.dark .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle.light .moon-icon {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0);
+}
+
+.theme-toggle.light .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.sun-icon, .moon-icon {
+    position: absolute;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Partículas de fondo animadas */
+/* Partículas de fondo animadas con temas específicos */
+.background-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Partículas base */
+/* Efectos especiales para transiciones de tema */
+.particle {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+
+
+/* Animaciones de salida */
+@keyframes starFadeOut {
+    0% { 
+        opacity: 1; 
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) blur(0px);
+    }
+    30% { 
+        opacity: 1; 
+        transform: scale(1.3) rotate(90deg);
+        filter: brightness(1.5) blur(0px);
+    }
+    70% { 
+        opacity: 0.3; 
+        transform: scale(0.8) rotate(270deg);
+        filter: brightness(0.5) blur(2px);
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(0) rotate(360deg);
+        filter: brightness(0) blur(5px);
+    }
+}
+
+@keyframes meteorExit {
+    0% { 
+        opacity: 1; 
+        transform: translateX(0) translateY(0) scale(1);
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateX(200px) translateY(200px) scale(0.3);
+        filter: blur(10px);
+    }
+}
+
+@keyframes sunbeamScatter {
+    0% { 
+        opacity: 1; 
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) blur(0px);
+    }
+    50% { 
+        opacity: 0.8; 
+        transform: scale(1.4) rotate(180deg);
+        filter: brightness(1.3) blur(1px);
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(2) rotate(360deg);
+        filter: brightness(2) blur(8px);
+    }
+}
+
+@keyframes cloudFade {
+    0% { 
+        opacity: 0.8; 
+        transform: scale(1);
+        filter: blur(0px);
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(1.2);
+        filter: blur(5px);
+    }
+}
+
+/* Animaciones de entrada */
+@keyframes starAppear {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.5) rotate(-360deg);
+        filter: brightness(0) blur(10px);
+    }
+    50% { 
+        opacity: 0.5; 
+        transform: scale(1) rotate(-180deg);
+        filter: brightness(1) blur(2px);
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1.2) rotate(0deg);
+        filter: brightness(1.5) blur(0px);
+    }
+}
+
+@keyframes meteorEnter {
+    0% { 
+        opacity: 0; 
+        transform: translateX(-200px) translateY(-200px) scale(0.3);
+        filter: blur(10px);
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateX(0) translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+
+@keyframes sunbeamGather {
+    0% { 
+        opacity: 0; 
+        transform: scale(2) rotate(-360deg);
+        filter: brightness(2) blur(8px);
+    }
+    50% { 
+        opacity: 0.5; 
+        transform: scale(1.2) rotate(-180deg);
+        filter: brightness(1.3) blur(2px);
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) blur(0px);
+    }
+}
+
+@keyframes cloudMaterialize {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.5);
+        filter: blur(8px);
+    }
+    50% { 
+        opacity: 0.4; 
+        transform: scale(0.8);
+        filter: blur(3px);
+    }
+    100% { 
+        opacity: 0.8; 
+        transform: scale(1);
+        filter: blur(0px);
+    }
+}
+
+
+/* ===== TEMA OSCURO - ESTRELLAS Y METEOROS ===== */
+
+/* Estrellas estáticas que brillan */
+.star {
+    font-size: 12px;
+    color: #fff;
+    animation: starTwinkle 3s ease-in-out infinite alternate;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8),
+                 0 0 12px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes starTwinkle {
+    0% { 
+        opacity: 0.3; 
+        transform: scale(0.8);
+        filter: brightness(0.8);
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1.2);
+        filter: brightness(1.4);
+    }
+}
+
+/* Estrellas con brillo más intenso */
+.twinkle-star {
+    font-size: 16px;
+    animation: intenseTwinkle 4s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(240, 147, 251, 0.8),
+                 0 0 20px rgba(240, 147, 251, 0.4);
+}
+
+@keyframes intenseTwinkle {
+    0%, 100% { 
+        opacity: 0.4; 
+        transform: scale(0.6) rotate(0deg);
+    }
+    25% { 
+        opacity: 0.8; 
+        transform: scale(1) rotate(90deg);
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.3) rotate(180deg);
+    }
+    75% { 
+        opacity: 0.8; 
+        transform: scale(1) rotate(270deg);
+    }
+    100% { 
+        opacity: 0.4; 
+        transform: scale(0.6) rotate(360deg);
+    }
+}
+
+
+/* Iba a ser meteoro pero se convirtio en Luna */
+.meteor {
+    font-size: 18px;
+    animation: meteorFall 6s ease-in infinite;
+    filter: drop-shadow(0 0 8px #667eea);
+    transform-origin: center;
+}
+.meteor::before {
+    content: '⭐'; /* Se usa para crear un efecto de halo, cae hacia abajo a la izquierda */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg) scale(0.5);
+    opacity: 0.8;
+    animation: meteorFall 6s ease-in infinite;
+    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.6));
+    z-index: -1; /* Asegura que el halo esté detrás del meteoro */
+    pointer-events: none; /* Evita que el halo interfiera con los clics */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    will-change: transform, opacity;
+     
+}
+
+@keyframes meteorFall {
+    0% {
+        opacity: 0;
+        transform: translateX(-120px) translateY(-120px) rotate(-45deg) scale(0.5);
+    }
+    10% {
+        opacity: 1;
+        transform: translateX(-80px) translateY(-80px) rotate(-45deg) scale(1);
+    }
+    90% {
+        opacity: 1;
+        transform: translate(calc(100vw + 80px), calc(100vh + 80px)) rotate(-45deg) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(100vw + 120px), calc(100vh + 120px)) rotate(-45deg) scale(0.5);
+    }
+}
+
+/* ===== TEMA CLARO - RAYOS DE SOL Y NUBES ===== */
+
+/* Rayos de sol */
+.sunbeam {
+    font-size: 20px;
+    animation: sunFloat 8s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.6));
+}
+
+@keyframes sunFloat {
+    0%, 100% {
+        opacity: 0.6;
+        transform: translateY(100vh) scale(0.8) rotate(0deg);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(80vh) scale(1) rotate(90deg);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(30vh) scale(1.1) rotate(180deg);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(10vh) scale(1) rotate(270deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20vh) scale(0.8) rotate(360deg);
+    }
+}
+
+/* Nubes flotantes */
+.cloud {
+    font-size: 24px;
+    animation: cloudDrift 12s linear infinite;
+    opacity: 0.8;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes cloudDrift {
+    0% {
+        transform: translateX(-100px) scale(0.8);
+        opacity: 0;
+    }
+    10%, 90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(calc(100vw + 100px)) scale(1.1);
+        opacity: 0;
+    }
+}
+
+/* Partículas de luz dorada */
+.light-sparkle {
+    font-size: 14px;
+    animation: sparkleRise 5s ease-out infinite;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes sparkleRise {
+    0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0.5) rotate(0deg);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(80vh) scale(1) rotate(120deg);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(20vh) scale(0.8) rotate(300deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.3) rotate(360deg);
+    }
+}
+
+/* Efectos especiales para transiciones de tema */
+.particle {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Ajustes responsivos para partículas */
+@media (max-width: 768px) {
+    .star, .twinkle-star {
+        font-size: 10px;
+    }
+    
+    .meteor {
+        font-size: 14px;
+    }
+    
+    .sunbeam {
+        font-size: 16px;
+    }
+    
+    .cloud {
+        font-size: 20px;
+    }
+    
+    .light-sparkle {
+        font-size: 12px;
+    }
+}
+
+/* Optimización de rendimiento */
+@media (prefers-reduced-motion: reduce) {
+    .particle {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        opacity: 0.3;
+    }
+}
+
+
+
