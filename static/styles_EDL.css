@@ -193,6 +193,93 @@ input[name="prioridad"][type=number]::-webkit-outer-spin-button {
     display: inline-block;
 }
 
+
+/** Estilo base del input de capacidad */
+input[name="capacidad"] {
+    background: var(--card-bg); /** Color de fondo tomado de una variable personalizada */
+    border: 2px solid rgba(102, 126, 234, 0.3); /** Borde tenue azulino */
+    border-radius: var(--border-radius); /** Bordes redondeados según la variable */
+    padding: 12px 16px; /** Espaciado interior: arriba/abajo 12px, izquierda/derecha 16px */
+    color: var(--text-color); /** Color de texto según el tema */
+    font-size: 14px; /** Tamaño del texto */
+    font-weight: 500; /** Grosor medio del texto */
+    width: 100%; /** Ocupa todo el ancho disponible */
+    box-sizing: border-box; /** Incluye padding y border en el tamaño total */
+    transition: var(--transition-smooth); /** Transiciones suaves */
+    text-align: center; /** Texto centrado */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /** Tipografía moderna */
+    box-shadow: var(--shadow-light); /** Sombra suave por defecto */
+    position: relative; /** Necesario para el pseudo-elemento ::before */
+    overflow: hidden; /** Oculta desbordamientos (para efectos internos) */
+}
+
+/** Efecto de resplandor suave al fondo con gradiente */
+input[name="capacidad"]::before {
+    content: ''; /** Crea el pseudo-elemento */
+    position: absolute;
+    top: 0;
+    left: -100%; /** Lo posiciona fuera del input para un posible efecto animado */
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent); /** Gradiente que simula un brillo */
+    transition: var(--transition-smooth); /** Suavidad al aplicar el efecto */
+}
+
+/** Estilo para el texto placeholder */
+input[name="capacidad"]::placeholder {
+    color: var(--text-light); /** Color más tenue */
+    font-size: 13px; /** Tamaño un poco más pequeño */
+    text-align: center;
+    opacity: 0.8; /** Ligeramente transparente */
+}
+
+/** Estado cuando el input está enfocado (clic en él) */
+input[name="capacidad"]:focus {
+    outline: none; /** Remueve el contorno predeterminado del navegador */
+    border-color: var(--primary-color); /** Resalta el borde */
+    box-shadow: var(--shadow-medium), 0 0 0 3px rgba(102, 126, 234, 0.2); /** Añade sombra para profundidad */
+    transform: translateY(-2px); /** Eleva ligeramente el campo */
+    background: var(--card-bg); /** Mantiene fondo consistente */
+}
+
+/** Estilo al pasar el mouse encima */
+input[name="capacidad"]:hover {
+    border-color: var(--secondary-color); /** Cambia el color del borde */
+    box-shadow: var(--shadow-medium); /** Incrementa la sombra */
+    transform: translateY(-1px); /** Sutil efecto de elevación */
+}
+
+/** Validación visual: estado VÁLIDO */
+input[name="capacidad"]:valid:not(:placeholder-shown) {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.05)); /** Verde tenue */
+    border-color: #10b981; /** Borde verde vibrante */
+    color: #10b981; /** Texto verde */
+    font-weight: 600; /** Más peso para énfasis */
+    box-shadow: var(--shadow-medium), 0 0 15px rgba(16, 185, 129, 0.2); /** Resplandor verde */
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.3); /** Sombra de texto para brillar */
+}
+
+/** Validación visual: estado INVÁLIDO con animación de shake */
+input[name="capacidad"]:invalid:not(:placeholder-shown) {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05)); /** Rojo tenue */
+    border-color: #ef4444; /** Borde rojo vibrante */
+    color: #ef4444; /** Texto rojo */
+    font-weight: 600;
+    box-shadow: var(--shadow-medium), 0 0 15px rgba(239, 68, 68, 0.2); /** Resplandor rojo */
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+    animation: shake 0.5s ease-in-out; /** Efecto de vibración (Sacudida) */
+}
+
+/** Elimina a las flechas del input tipo number en navegadores WebKit, Porque se ven feas. */
+input[name="capacidad"][type=number]::-webkit-inner-spin-button,
+input[name="capacidad"][type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none; /** Remueve el estilo predeterminado */
+}
+
+.priority-wrapper {
+    display: inline-block;
+}
+
 /* Contenedor vertical tipo cápsula */
 .custom-spinner {
     display: flex;
