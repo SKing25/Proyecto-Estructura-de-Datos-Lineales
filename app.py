@@ -712,6 +712,177 @@ def peek_cola_simple():
                          tiempos=f"{tiempo:.7f} s", # Tiempo de ejecución
                          memorias=f"{memoria:.6f} MB") # Memoria utilizada
 
+#---------------------------------------Cola Circular---------------------------------
+
+class ColaCircular:
+    def __init__(self, capacidad=5):
+        self.capacidad = capacidad
+        self.items = [None] * capacidad
+        self.frente = 0
+        self.final = 0
+        self.tamaño = 0
+
+    @benchmark
+    def encolar(self, dato):
+        if self.is_full():
+            return False  # No se puede encolar si está llena
+
+        self.items[self.final] = dato
+        self.final = (self.final + 1) % self.capacidad
+        self.tamaño += 1
+        return True
+
+    @benchmark
+    def desencolar(self):
+        if self.is_empty():
+            return None
+
+        dato = self.items[self.frente]
+        self.items[self.frente] = None  # Limpiar la posición
+        self.frente = (self.frente + 1) % self.capacidad
+        self.tamaño -= 1
+        return dato
+
+    def is_empty(self):
+        return self.tamaño == 0
+
+    def is_full(self):
+        return self.tamaño == self.capacidad
+
+    def obtener_cola(self):
+        if self.is_empty():
+            return []
+
+        resultado = []
+        i = self.frente
+        for _ in range(self.tamaño):
+            resultado.append(self.items[i])
+            i = (i + 1) % self.capacidad
+        return resultado
+
+    def get_estado(self):
+        if self.is_empty():
+            return 'Cola vacia'
+        elif self.is_full():
+            return 'Cola llena'
+        else:
+            return 'Cola con elementos'
+
+    def redimensionar(self, nueva_capacidad):
+        if nueva_capacidad < self.tamaño:
+            return False  # No se puede reducir si hay más elementos
+
+        # Crear nueva cola con los elementos actuales
+        elementos_actuales = self.obtener_cola()
+        self.__init__(nueva_capacidad)
+
+        # Volver a insertar los elementos
+        for elemento in elementos_actuales:
+            self.items[self.final] = elemento
+            self.final = (self.final + 1) % self.capacidad
+            self.tamaño += 1
+
+        return True
+
+cola_circular = ColaCircular()  # Instancia global de la cola circular
+
+# Rutas para Cola Circular
+@app.route('/cola-circular')
+def mostrar_cola_circular():
+    datos = cola_circular.obtener_cola()
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
+    estado = cola_circular.get_estado()
+    return render_template('cola_circular.html',
+                           datos=df.to_html(index=False),
+                           lista=cola_circular,
+                           mensaje_busqueda=estado,
+                           capacidad_total = cola_circular.capacidad,
+                           espacios_disponibles = cola_circular.capacidad - cola_circular.tamaño)
+
+@app.route('/cola-circular/encolar', methods=['POST'])
+def encolar_cola_circular():
+    valor = request.form['valor']
+    tiempos = []
+    memorias = []
+    elementos_no_encolados = []
+
+    for val in valor.split(','):
+        val = val.strip()
+        if val:
+            exito, tiempo, memoria = cola_circular.encolar(val)
+            if exito:
+                tiempos.append(tiempo)
+                memorias.append(memoria)
+            else:
+                elementos_no_encolados.append(val)
+
+    tiempo_total = sum(tiempos) if tiempos else 0
+    memoria_total = sum(memorias) if memorias else 0
+
+    mensaje = ""
+    if elementos_no_encolados:
+        mensaje = f"No se pudieron encolar: {', '.join(elementos_no_encolados)} <br> {cola_circular.get_estado()}"
+    else:
+        mensaje = f"Elementos encolados exitosamente. <br> {cola_circular.get_estado()}"
+
+    datos = cola_circular.obtener_cola()
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
+
+    return render_template('cola_circular.html',
+                           datos=df.to_html(index=False),
+                           lista=cola_circular,
+                           mensaje_busqueda=mensaje,
+                           tiempos=f"{tiempo_total:.7f} s",
+                           memorias=f"{memoria_total:.6f} MB",
+                           capacidad_total=cola_circular.capacidad,
+                           espacios_disponibles=cola_circular.capacidad - cola_circular.tamaño)
+
+@app.route('/cola-circular/desencolar', methods=['POST'])
+def desencolar_cola_circular():
+    dato, tiempo, memoria = cola_circular.desencolar()
+    mensaje = f'Elemento desencolado: {dato} <br> {cola_circular.get_estado()}' if dato else 'Cola vacía'
+
+    datos = cola_circular.obtener_cola()
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
+
+    return render_template('cola_circular.html',
+                           datos=df.to_html(index=False),
+                           lista=cola_circular,
+                           mensaje_busqueda=mensaje,
+                           tiempos=f"{tiempo:.7f} s",
+                           memorias=f"{memoria:.6f} MB",
+                           capacidad_total=cola_circular.capacidad,
+                           espacios_disponibles=cola_circular.capacidad - cola_circular.tamaño)
+
+@app.route('/cola-circular/configuracion', methods=['POST'])
+def configurar_cola_circular():
+    try:
+        nueva_capacidad = int(request.form['capacidad'])
+        if nueva_capacidad <= 0:
+            mensaje = "La capacidad debe ser un número positivo"
+        elif nueva_capacidad < cola_circular.tamaño:
+            mensaje = f"No se puede reducir la capacidad a {nueva_capacidad}. Hay {cola_circular.tamaño} elementos en la cola"
+        else:
+            exito = cola_circular.redimensionar(nueva_capacidad)
+            if exito:
+                mensaje = f"Cola redimensionada exitosamente. Nueva capacidad: {nueva_capacidad}"
+            else:
+                mensaje = "Error al redimensionar la cola"
+    except ValueError:
+        mensaje = "Por favor ingrese un número válido para la capacidad"
+
+    datos = cola_circular.obtener_cola()
+    df = pd.DataFrame(datos, columns=['Valor']) if datos else pd.DataFrame(columns=['Valor'])
+    estado = cola_circular.get_estado()
+
+    return render_template('cola_circular.html',
+                           datos=df.to_html(index=False),
+                           lista=cola_circular,
+                           estado=estado,
+                           mensaje_busqueda=mensaje,
+                           capacidad_total = cola_circular.capacidad,
+                           espacios_disponibles = cola_circular.capacidad - cola_circular.tamaño)
+
 #-------------------------------Cola de Prioridad-------------------------------------
 
 class ColaPrioridad:

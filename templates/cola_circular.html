@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cola Circular</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_Tema.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_EDL.css') }}">
+</head>
+<body>
+    <div class="theme-toggle light" id="themeToggle">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+    </div>
+
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <a href="/" class="back-btn">← Volver al Menú</a>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Cola Circular</h1>
+            <p>Estructura que mantiene un tamaño fijo y reutiliza espacios liberados.</p>
+        </div>
+
+        <div class="operations">
+            <div class="operation-card">
+                <h3>Configurar Capacidad</h3>
+                <form action="/cola-circular/configuracion" method="POST">
+                    <input type="number" name="capacidad" placeholder="Nueva capacidad" min="1" required>
+                    <input type="submit" value="Configurar">
+                </form>
+            </div>
+
+            <div class="operation-card">
+                <h3>Encolar</h3>
+                <form action="/cola-circular/encolar" method="POST">
+                    <input type="text" name="valor" placeholder="Ej: 10, 20, 30" required>
+                    <input type="submit" value="Encolar">
+                </form>
+            </div>
+
+            <div class="operation-card">
+                <h3>Desencolar</h3>
+                <form action="/cola-circular/desencolar" method="POST">
+                    <input type="submit" value="Desencolar">
+                </form>
+            </div>
+        </div>
+
+        {% if mensaje_busqueda %}
+            <div class="message">{{ mensaje_busqueda|safe }}</div>
+        {% endif %}
+
+        <div class="list-container">
+            {% if datos %}
+                {{ datos|safe }}
+            {% else %}
+                <div class="message">Aún no hay elementos. Inserta para comenzar.</div>
+            {% endif %}
+        </div>
+
+        <div class="list-info">
+            <p><strong>Capacidad Total:</strong> {{ capacidad_total }}</p>
+            <p><strong>Espacios Disponibles:</strong> {{ espacios_disponibles }}</p>
+            {% if tiempos %}
+                <p><strong>Tiempo:</strong> {{ tiempos }}</p>
+            {% endif %}
+            {% if memorias %}
+                <p><strong>Memoria:</strong> {{ memorias }}</p>
+            {% endif %}
+        </div>
+
+        <div class="info-panel" style="margin-top: 2rem;">
+            <h3>Sobre esta estructura</h3>
+            <p><strong>Ventajas:</strong> Optimiza el uso de memoria mediante reutilización de espacios.</p>
+            <p><strong>Desventajas:</strong> Tamaño fijo que debe ser definido previamente.</p>
+            <p><strong>Complejidad:</strong> Encolar O(1), Desencolar O(1)</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
