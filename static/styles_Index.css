@@ -230,38 +230,6 @@
 }
 
 
-.card.coming-soon {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    display: flex;
-    opacity: 0.7;
-    transition: var(--transition-smooth);
-    position: relative;
-}
-
-
-.card.coming-soon::after {
-    content: 'CHAMBEARAN ESTOY SEGURO';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    animation: pulse 2s ease-in-out infinite;
-    color: var(RGB(240, 147, 251));
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-}
-
-.card.coming-soon:hover {
-    opacity: 0.7;
-    transform: scale(1);
-}
 
 /* Estilos para las tarjetas del carrusel */
 .card-image {
@@ -276,7 +244,8 @@
 .card-image img {
     width: 100%;
     height: 300px;
-    object-fit: cover;
+    object-fit: fill;
+    border-radius: var(--border-radius);
     transition: var(--transition-smooth);
     filter: brightness(0.9);
 }
@@ -293,6 +262,7 @@
     flex-direction: column;
     justify-content: center;
     position: relative;
+    
 }
 
 .card-content::before {
