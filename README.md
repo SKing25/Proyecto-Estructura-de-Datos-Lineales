@@ -75,6 +75,7 @@ Una vez iniciada la aplicación:
 
 - **SKing** - [@SKing25](https://github.com/SKing25)
 - **JAGR1792** - [@JAGR1792](https://github.com/JAGR1792)
+- **Mariana909** - [@Mariana909](https://github.com/Mariana909)
   
 Desarrollado como parte del curso de Estructura de Datos Lineales.
 
